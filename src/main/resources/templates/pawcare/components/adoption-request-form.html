@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demande d'adoption - PawCare</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/pawcare-style.css}">
+    <style>
+        .request-container {
+            max-width: 800px;
+            margin: 120px auto 60px;
+            padding: 0 30px;
+        }
+        .request-card {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: var(--shadow);
+        }
+        .request-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .request-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: var(--dark);
+            margin-bottom: 10px;
+        }
+        .request-header p {
+            color: var(--text-light);
+        }
+        .animal-info {
+            background: var(--cream);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        .animal-avatar {
+            width: 80px;
+            height: 80px;
+            background: var(--forest);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: white;
+        }
+        .animal-details h3 {
+            font-size: 1.3rem;
+            color: var(--forest);
+            margin-bottom: 5px;
+        }
+        .animal-details p {
+            color: var(--text-light);
+            margin: 5px 0;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--forest);
+        }
+        .form-group label .required {
+            color: var(--terracotta);
+            margin-left: 3px;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--terracotta);
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .checkbox-group {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: normal;
+            cursor: pointer;
+        }
+        .conditional-field {
+            margin-top: 10px;
+            margin-left: 20px;
+            display: none;
+        }
+        .conditional-field.show {
+            display: block;
+        }
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        .btn-primary {
+            background: var(--terracotta);
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            flex: 2;
+            font-size: 1rem;
+            transition: background 0.3s;
+        }
+        .btn-primary:hover {
+            background: #b55a34;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--terracotta);
+            color: var(--terracotta);
+            padding: 14px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            flex: 1;
+            text-align: center;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .btn-outline:hover {
+            background: var(--terracotta);
+            color: white;
+        }
+        .error-message {
+            color: var(--terracotta);
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+        .success-message {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        .error-alert {
+            background: #ffebee;
+            color: #c62828;
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--forest);
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+        .info-note {
+            background: rgba(196, 107, 63, 0.1);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+    </style>
+</head>
+
+<body>
+<div th:replace="~{pawcare/fragments/navbar :: navbar}"></div>
+
+<div class="request-container">
+    <a th:href="@{/adoption/{id}(id=${post.id})}" class="back-button">← Retour à l'annonce</a>
+
+    <div class="request-card">
+        <div class="request-header">
+            <h1>🐾 Demande d'adoption</h1>
+            <p>Remplissez ce formulaire pour exprimer votre intérêt</p>
+        </div>
+
+        <!-- Messages flash -->
+        <div th:if="${param.success}" class="success-message">
+            ✅ <span th:text="${param.success}">Demande envoyée !</span>
+        </div>
+        <div th:if="${param.error}" class="error-alert">
+            ❌ <span th:text="${param.error}">Erreur</span>
+        </div>
+
+        <!-- Informations sur l'animal -->
+        <div class="animal-info">
+            <div class="animal-avatar" th:text="${post.animalType == 'Chien' ? '🐕' :
+                                                    post.animalType == 'Chat' ? '🐈' :
+                                                    post.animalType == 'Lapin' ? '🐇' :
+                                                    post.animalType == 'Oiseau' ? '🦜' : '🐾'}">
+            </div>
+            <div class="animal-details">
+                <h3 th:text="${post.title}">Max cherche une famille</h3>
+                <p th:text="${post.animalType} + ' • ' + ${post.breed} + ' • ' + ${post.age} + ' ans'">Chien • Labrador • 2 ans</p>
+                <p th:text="'📍 ' + ${post.location}">📍 Casablanca</p>
+            </div>
+        </div>
+
+        <div class="info-note">
+            💡 <strong>Conseil :</strong> Soyez sincère et détaillé dans votre message. Plus vous en direz sur vous et votre environnement, plus le propriétaire sera enclin à vous confier son animal.
+        </div>
+
+        <!-- ✅ CORRECTION: URL correcte sans /api/ -->
+        <form id="adoptionRequestForm" th:action="@{/adoption/{id}/request(id=${post.id})}" method="post">
+
+            <!-- Message de motivation -->
+            <div class="form-group">
+                <label>Pourquoi voulez-vous adopter cet animal ? <span class="required">*</span></label>
+                <textarea name="message" rows="5" placeholder="Décrivez votre motivation, votre mode de vie, pourquoi cet animal vous correspond..." required></textarea>
+                <div class="error-message" id="messageError"></div>
+            </div>
+
+            <!-- Téléphone -->
+            <div class="form-group">
+                <label>Numéro de téléphone <span class="required">*</span></label>
+                <input type="tel" name="phoneNumber" placeholder="0612345678 ou +212612345678" required>
+                <div class="error-message" id="phoneError"></div>
+            </div>
+
+            <div class="form-row">
+                <!-- Situation de vie -->
+                <div class="form-group">
+                    <label>Situation de vie</label>
+                    <select name="livingSituation">
+                        <option value="">Sélectionnez...</option>
+                        <option value="Maison avec jardin">🏠 Maison avec jardin</option>
+                        <option value="Maison sans jardin">🏘️ Maison sans jardin</option>
+                        <option value="Appartement">🏢 Appartement</option>
+                        <option value="Ferme / Terrain">🚜 Ferme / Terrain</option>
+                        <option value="Autre">📦 Autre</option>
+                    </select>
+                </div>
+
+                <!-- Expérience -->
+                <div class="form-group">
+                    <label>Expérience avec les animaux</label>
+                    <textarea name="experience" rows="3" placeholder="Avez-vous déjà eu des animaux ? Quelle expérience avez-vous ?"></textarea>
+                </div>
+            </div>
+
+            <!-- Autres animaux -->
+            <div class="form-group">
+                <div class="checkbox-group">
+                    <label>
+                        <input type="checkbox" name="hasOtherPets" value="true" id="hasOtherPets">
+                        J'ai d'autres animaux
+                    </label>
+                </div>
+                <div class="conditional-field" id="otherPetsField">
+                    <div class="form-group">
+                        <label>Décrivez vos autres animaux</label>
+                        <textarea name="otherPetsDetails" rows="2" placeholder="Type, âge, caractère..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Enfants -->
+            <div class="form-group">
+                <div class="checkbox-group">
+                    <label>
+                        <input type="checkbox" name="hasChildren" value="true" id="hasChildren">
+                        J'ai des enfants
+                    </label>
+                </div>
+                <div class="conditional-field" id="childrenField">
+                    <div class="form-group">
+                        <label>Âges des enfants</label>
+                        <input type="text" name="childrenAges" placeholder="Ex: 5 ans, 8 ans, 12 ans...">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-primary">📨 Envoyer ma demande</button>
+                <a th:href="@{/adoption/{id}(id=${post.id})}" class="btn-outline">Annuler</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div th:replace="~{pawcare/fragments/footer :: footer}"></div>
+<div th:replace="~{pawcare/fragments/toast :: toast}"></div>
+
+<script th:src="@{/js/pawcare-main.js}"></script>
+<script>
+    // Gestion des champs conditionnels
+    const hasOtherPetsCheckbox = document.getElementById('hasOtherPets');
+    const hasChildrenCheckbox = document.getElementById('hasChildren');
+    const otherPetsField = document.getElementById('otherPetsField');
+    const childrenField = document.getElementById('childrenField');
+
+    if (hasOtherPetsCheckbox) {
+        hasOtherPetsCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                otherPetsField.classList.add('show');
+            } else {
+                otherPetsField.classList.remove('show');
+            }
+        });
+    }
+
+    if (hasChildrenCheckbox) {
+        hasChildrenCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                childrenField.classList.add('show');
+            } else {
+                childrenField.classList.remove('show');
+            }
+        });
+    }
+
+    // Validation du formulaire avant envoi
+    const form = document.getElementById('adoptionRequestForm');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const message = document.querySelector('textarea[name="message"]').value;
+            const phone = document.querySelector('input[name="phoneNumber"]').value;
+
+            let isValid = true;
+
+            // Validation du message
+            if (!message || message.trim().length < 20) {
+                const msgError = document.getElementById('messageError');
+                if (msgError) msgError.textContent = 'Veuillez écrire un message d\'au moins 20 caractères';
+                isValid = false;
+            } else {
+                const msgError = document.getElementById('messageError');
+                if (msgError) msgError.textContent = '';
+            }
+
+            // Validation du téléphone (format marocain)
+            const phoneRegex = /^(\+212|0)[0-9]{9}$/;
+            if (!phone || !phoneRegex.test(phone)) {
+                const phoneError = document.getElementById('phoneError');
+                if (phoneError) phoneError.textContent = 'Numéro invalide (ex: 0612345678 ou +212612345678)';
+                isValid = false;
+            } else {
+                const phoneError = document.getElementById('phoneError');
+                if (phoneError) phoneError.textContent = '';
+            }
+
+            if (!isValid) {
+                e.preventDefault();
+                showToast('Veuillez corriger les erreurs dans le formulaire');
+            } else {
+                showToast('Envoi de la demande en cours...');
+            }
+        });
+    }
+</script>
+</body>
+</html>

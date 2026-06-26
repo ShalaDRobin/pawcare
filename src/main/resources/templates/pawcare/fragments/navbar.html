@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<body>
+<div th:fragment="navbar">
+    <nav id="navbar">
+        <!-- Logo -->
+        <a class="nav-logo" th:onclick="'scrollToSection(\'home\')'" style="cursor:pointer">
+            <span class="paw-icon">🐾</span> Paw<span>Care</span>
+        </a>
+
+        <!-- Navigation Tabs -->
+        <ul class="nav-tabs">
+            <li><button class="nav-tab-link active" id="tab-home" th:onclick="'scrollToSection(\'home\')'">
+                <span class="tab-icon">🏡</span> Accueil
+            </button></li>
+            <li><button class="nav-tab-link" id="tab-adoption" th:onclick="'scrollToSection(\'adoption\')'">
+                <span class="tab-icon">🐾</span> Adoption
+            </button></li>
+            <li><button class="nav-tab-link" id="tab-perdus" th:onclick="'scrollToSection(\'perdus\')'">
+                <span class="tab-icon">🔍</span> Animaux perdus
+            </button></li>
+            <li><button class="nav-tab-link" id="tab-sensibilisation" th:onclick="'scrollToSection(\'sensibilisation\')'">
+                <span class="tab-icon">💚</span> Sensibilisation
+            </button></li>
+            <li><button class="nav-tab-link" id="tab-forum" th:onclick="'scrollToSection(\'forum\')'">
+                <span class="tab-icon">💬</span> Forum
+            </button></li>
+        </ul>
+
+        <!-- Actions (Connexion / Inscription) -->
+        <div class="nav-actions" sec:authorize="!isAuthenticated()">
+            <button class="btn btn-outline" th:onclick="'openModal(\'login\')'">Connexion</button>
+            <button class="btn btn-primary" th:onclick="'openModal(\'signup\')'">S'inscrire</button>
+        </div>
+
+        <!-- ✅ MENU UTILISATEUR - UNIQUEMENT DÉCONNEXION -->
+        <div class="nav-actions" sec:authorize="isAuthenticated()">
+            <span class="notification-badge" th:onclick="'window.location.href=\'/notifications\''">
+                🔔 <span class="badge" th:text="${session.unreadCount ?: 0}">0</span>
+            </span>
+            <div class="profile-menu">
+                <span class="user-name" th:text="${session.user.firstName} + ' ' + ${session.user.lastName}"></span>
+                <div class="dropdown">
+                    <!-- ✅ SEULEMENT DÉCONNEXION -->
+                    <a th:href="@{/auth/logout}">
+                        <span class="dropdown-icon">🔒</span> Déconnexion
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+</div>
+</body>
+</html>

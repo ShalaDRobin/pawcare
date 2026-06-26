@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'PawCare - ' + ${category.name}">PawCare - Catégorie</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/pawcare-style.css}">
+    <style>
+        .forum-category-container {
+            max-width: 1100px;
+            margin: 120px auto 60px;
+            padding: 0 30px;
+        }
+        .forum-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 30px;
+            margin-top: 30px;
+        }
+        .forum-sidebar {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 100px;
+            align-self: start;
+        }
+        .sidebar-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--dark);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border);
+        }
+        .forum-category-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 2px;
+            text-decoration: none;
+        }
+        .forum-category-item:hover {
+            background: var(--cream);
+        }
+        .forum-category-item.active {
+            background: rgba(196,107,63,0.1);
+            color: var(--terracotta);
+        }
+        .cat-icon { font-size: 1.3rem; }
+        .cat-info { flex: 1; }
+        .cat-name { font-weight: 600; font-size: 0.9rem; color: var(--dark); }
+        .cat-count { font-size: 0.7rem; color: var(--text-light); }
+        .cat-badge {
+            background: var(--terracotta);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 50px;
+            font-size: 0.6rem;
+            font-weight: 600;
+        }
+        .category-header {
+            background: white;
+            border-radius: 20px;
+            padding: 30px 35px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .category-header .cat-icon-big { font-size: 3rem; }
+        .category-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            color: var(--dark);
+            margin: 0 0 6px;
+        }
+        .category-header p {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin: 0;
+        }
+        .posts-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .posts-count {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+        .post-card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-bottom: 15px;
+        }
+        .post-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+        }
+        .post-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1rem;
+            color: white;
+            flex-shrink: 0;
+        }
+        .av1 { background: #C46B3F; }
+        .av2 { background: #2D4A3E; }
+        .av3 { background: #E67E22; }
+        .av4 { background: #2980B9; }
+        .av5 { background: #8E44AD; }
+        .post-meta { flex: 1; }
+        .post-author { font-weight: 600; font-size: 0.9rem; color: var(--dark); }
+        .post-time { font-size: 0.75rem; color: var(--text-light); }
+        .post-title { font-weight: 700; font-size: 1.1rem; color: var(--dark); margin-bottom: 8px; }
+        .post-excerpt { font-size: 0.9rem; color: var(--text-light); line-height: 1.5; margin-bottom: 12px; }
+        .post-footer { display: flex; gap: 20px; font-size: 0.75rem; color: var(--text-light); }
+        .post-stat { display: flex; align-items: center; gap: 5px; }
+        .post-category-tag {
+            display: inline-block;
+            padding: 1px 10px;
+            border-radius: 50px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            background: rgba(196,107,63,0.1);
+            color: var(--terracotta);
+        }
+        .empty-posts {
+            text-align: center;
+            padding: 60px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            color: var(--text-light);
+        }
+        .empty-posts h3 { color: var(--dark); font-family: 'Playfair Display', serif; margin: 15px 0 8px; }
+        .pagination {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .pagination a {
+            padding: 8px 14px;
+            border-radius: 10px;
+            background: white;
+            box-shadow: var(--shadow);
+            font-size: 0.85rem;
+            text-decoration: none;
+            color: var(--dark);
+            transition: all 0.2s;
+        }
+        .pagination a:hover, .pagination a.active {
+            background: var(--terracotta);
+            color: white;
+        }
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            transition: color 0.2s;
+        }
+        .back-link:hover { color: var(--terracotta); }
+        @media (max-width: 768px) {
+            .forum-layout { grid-template-columns: 1fr; }
+            .forum-sidebar { position: relative; top: 0; }
+        }
+    </style>
+</head>
+
+<body>
+<div th:replace="~{pawcare/fragments/navbar :: navbar}"></div>
+
+<div class="forum-category-container">
+
+    <a href="/#forum" class="back-link">← Retour au forum</a>
+
+    <div class="forum-layout">
+        <!-- ✅ Sidebar avec toutes les catégories -->
+        <div class="forum-sidebar">
+            <div class="sidebar-title">📂 Catégories</div>
+            <div th:each="cat : ${allCategories}">
+                <a class="forum-category-item"
+                   th:href="@{'/forum/categorie/' + ${cat.id}}"
+                   th:classappend="${cat.id == category.id ? 'active' : ''}">
+                    <span class="cat-icon" th:text="${cat.icon != null ? cat.icon : '📁'}">📁</span>
+                    <div class="cat-info">
+                        <div class="cat-name" th:text="${cat.name}">Catégorie</div>
+                        <div class="cat-count" th:text="${cat.postCount} + ' discussions'">0 discussions</div>
+                    </div>
+                    <span class="cat-badge" th:if="${cat.postCount != null and cat.postCount > 0}"
+                          th:text="${cat.postCount}">0</span>
+                </a>
+            </div>
+
+            <br>
+            <button class="btn btn-terracotta" style="width:100%"
+                    th:if="${session.user != null}"
+                    onclick="window.location.href='/forum/creer'">
+                ✍️ Nouveau post
+            </button>
+            <button class="btn btn-terracotta" style="width:100%"
+                    th:unless="${session.user != null}"
+                    onclick="openModal('login')">
+                🔒 Connectez-vous pour poster
+            </button>
+        </div>
+
+        <!-- ✅ Posts filtrés par catégorie -->
+        <div>
+            <!-- En-tête catégorie -->
+            <div class="category-header">
+                <span class="cat-icon-big" th:text="${category.icon != null ? category.icon : '📁'}">📁</span>
+                <div>
+                    <h1 th:text="${category.name}">Nom de la catégorie</h1>
+                    <p th:text="${category.description != null ? category.description : 'Tous les sujets de cette catégorie'}">Description</p>
+                    <span style="font-size:0.85rem; color:var(--text-light);"
+                          th:text="${totalPosts} + ' discussion(s)'">0 discussions</span>
+                </div>
+                <div style="margin-left:auto;" th:if="${session.user != null}">
+                    <button class="btn btn-primary" onclick="window.location.href='/forum/creer'">
+                        ✍️ Nouveau post
+                    </button>
+                </div>
+            </div>
+
+            <!-- Toolbar -->
+            <div class="posts-toolbar">
+                <span class="posts-count"
+                      th:text="${posts != null ? posts.size() + ' sujet(s) affiché(s)' : ''}"></span>
+            </div>
+
+            <!-- Liste des posts -->
+            <div th:if="${posts != null and !posts.isEmpty()}">
+                <div class="post-card"
+                     th:each="post : ${posts}"
+                     th:onclick="'window.location.href=\'/forum/post/' + ${post.id} + '\''">
+                    <div class="post-header">
+                        <div class="avatar" th:classappend="'av' + (${post.user.id % 5 + 1})"
+                             th:text="${#strings.substring(post.user.firstName, 0, 1)}">A</div>
+                        <div class="post-meta">
+                            <div class="post-author"
+                                 th:text="${post.user.firstName} + ' ' + ${#strings.substring(post.user.lastName, 0, 1)} + '.'">
+                                Auteur</div>
+                            <div class="post-time">
+                                <span th:text="${#temporals.format(post.createdAt, 'dd MMM yyyy')}">date</span>
+                                <span th:if="${post.isPinned}" style="color:#e67e22;"> 📌</span>
+                                <span th:if="${post.isLocked}" style="color:#7f8c8d;"> 🔒</span>
+                            </div>
+                        </div>
+                        <span class="post-category-tag" th:text="${post.category.name}">Catégorie</span>
+                    </div>
+                    <div class="post-title" th:text="${post.title}">Titre du post</div>
+                    <div class="post-excerpt" th:text="${#strings.abbreviate(post.content, 130)}">Contenu...</div>
+                    <div class="post-footer">
+                        <div class="post-stat" th:text="'💬 ' + ${post.commentCount} + ' réponses'">💬 0</div>
+                        <div class="post-stat" th:text="'👁️ ' + ${post.viewCount} + ' vues'">👁️ 0</div>
+                        <div class="post-stat" th:text="'❤️ ' + ${post.likeCount} + ' likes'">❤️ 0</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vide -->
+            <div th:if="${posts == null or posts.isEmpty()}" class="empty-posts">
+                <div style="font-size:3.5rem;">💬</div>
+                <h3>Aucun sujet dans cette catégorie</h3>
+                <p>Soyez le premier à lancer une discussion !</p>
+                <div th:if="${session.user != null}" style="margin-top:20px;">
+                    <button class="btn btn-primary" onclick="window.location.href='/forum/creer'">
+                        ✍️ Créer un sujet
+                    </button>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination" th:if="${totalPages != null and totalPages > 1}">
+                <a th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                   th:href="@{'/forum/categorie/' + ${category.id} + '?page=' + ${i}}"
+                   th:text="${i + 1}"
+                   th:classappend="${i == currentPage ? 'active' : ''}">1</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{pawcare/fragments/footer :: footer}"></div>
+<div th:replace="~{pawcare/fragments/toast :: toast}"></div>
+<div th:replace="~{pawcare/fragments/auth-modals :: authModals}"></div>
+<script th:src="@{/js/pawcare-main.js}"></script>
+</body>
+</html>

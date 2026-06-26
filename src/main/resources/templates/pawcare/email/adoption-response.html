@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Réponse à votre demande d'adoption</title>
+    <style>
+        body { font-family: 'DM Sans', sans-serif; background-color: #f9f7f4; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 24px; padding: 40px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .header { text-align: center; margin-bottom: 30px; }
+        .logo { font-size: 2rem; font-weight: bold; color: #2D4A3E; }
+        .accepted { background: #e8f5e9; color: #2e7d32; padding: 15px; border-radius: 12px; }
+        .rejected { background: #ffebee; color: #c62828; padding: 15px; border-radius: 12px; }
+        .button { display: inline-block; background: #C46B3F; color: white; padding: 12px 24px; border-radius: 50px; text-decoration: none; margin: 20px 0; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div class="logo">🐾 PawCare</div>
+        <h2>Réponse à votre demande</h2>
+    </div>
+    <div class="content">
+        <p>Bonjour <strong th:text="${requesterName}">[Nom]</strong>,</p>
+
+        <div th:if="${status == 'ACCEPTED'}" class="accepted">
+            <p>✅ <strong>Bonne nouvelle !</strong> Votre demande d'adoption pour <strong th:text="${animalName}">[Animal]</strong> a été <strong>acceptée</strong> !</p>
+            <p>Vous pouvez contacter le propriétaire :</p>
+            <p>📞 <span th:text="${ownerPhone}">[Téléphone]</span></p>
+            <p>📧 <span th:text="${ownerEmail}">[Email]</span></p>
+        </div>
+
+        <div th:if="${status == 'REJECTED'}" class="rejected">
+            <p>❌ Votre demande d'adoption pour <strong th:text="${animalName}">[Animal]</strong> a été <strong>refusée</strong>.</p>
+            <p th:if="${ownerResponse}"><strong>Message du propriétaire :</strong> "<span th:text="${ownerResponse}">[Message]</span>"</p>
+            <p>Ne vous découragez pas, d'autres animaux attendent une famille !</p>
+        </div>
+
+        <a href="http://localhost:8080/adoption" class="button">
+            🐾 Voir d'autres annonces
+        </a>
+    </div>
+    <div class="footer">
+        <p>© 2026 PawCare - Plateforme de protection animale</p>
+    </div>
+</div>
+</body>
+</html>

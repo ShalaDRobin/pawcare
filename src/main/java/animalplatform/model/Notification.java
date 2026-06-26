@@ -1,0 +1,48 @@
+package animalplatform.model;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "notifications")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Notification {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @Column(nullable = false)
+    private String title;
+
+    @Column(nullable = false)
+    private String message;
+
+    @Enumerated(EnumType.STRING)
+    private NotificationType type;  // ← Maintenant c'est un type importé
+
+    private String referenceId;
+
+    private String referenceType;
+
+    private Boolean isRead = false;
+
+    private Boolean isClicked = false;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
+}

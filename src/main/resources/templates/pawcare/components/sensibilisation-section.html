@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <style>
+        .awareness-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        .awareness-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 20px;
+            padding: 28px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .awareness-card:hover {
+            background: rgba(255,255,255,0.08);
+            transform: translateY(-6px);
+            border-color: rgba(212,168,83,0.3);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+        }
+        .awareness-icon {
+            font-size: 2.8rem;
+            margin-bottom: 12px;
+        }
+        .awareness-card h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            color: white;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+        .awareness-card p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: rgba(255,255,255,0.55);
+            margin-bottom: 12px;
+        }
+        .awareness-link {
+            color: var(--gold);
+            font-weight: 600;
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: gap 0.3s;
+        }
+        .awareness-link:hover {
+            gap: 10px;
+            text-decoration: underline;
+        }
+        .awareness-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.4);
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255,255,255,0.06);
+        }
+        .awareness-meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .awareness-badge {
+            display: inline-block;
+            padding: 3px 12px;
+            border-radius: 50px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            background: rgba(212,168,83,0.15);
+            color: var(--gold);
+            margin-bottom: 8px;
+        }
+        .empty-awareness {
+            text-align: center;
+            padding: 60px;
+            background: rgba(255,255,255,0.04);
+            border-radius: 20px;
+            color: rgba(255,255,255,0.5);
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        .empty-awareness h3 {
+            color: white;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            margin: 16px 0 8px;
+        }
+        .voir-tous-btn-wrapper {
+            text-align: center;
+            margin-top: 35px;
+        }
+        .btn-voir-tous {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: white;
+            padding: 13px 32px;
+            border-radius: 50px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .btn-voir-tous:hover {
+            background: var(--terracotta);
+            border-color: var(--terracotta);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(196,107,63,0.35);
+            text-decoration: none;
+        }
+        @media (max-width: 768px) {
+            .awareness-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div th:fragment="sensibilisationSection">
+    <section id="sensibilisation">
+        <div class="section-header fade-in">
+            <div class="section-badge">💚 Sensibilisation</div>
+            <h2 class="section-title">Ensemble, <em>protégeons</em> nos compagnons</h2>
+            <p class="section-desc" style="color:rgba(255,255,255,0.55)">Informez-vous, partagez et agissez pour le bien-être animal.</p>
+        </div>
+
+        <!-- Bouton Publier un article (visible si connecté) -->
+        <div th:if="${session.user != null}" style="text-align: right; margin-bottom: 20px;">
+            <button class="btn btn-terracotta" onclick="window.location.href='/sensibilisation/create'" style="display: inline-flex; align-items: center; gap: 10px;">
+                <span style="font-size: 1.2rem;">✏️</span> Publier un article
+            </button>
+        </div>
+
+        <!-- ✅ Grille simple - 3 derniers articles -->
+        <div class="awareness-grid" th:if="${sensibilisationArticles != null and !sensibilisationArticles.isEmpty()}">
+            <div class="awareness-card" th:each="article : ${sensibilisationArticles}" th:onclick="'window.location.href=\'/sensibilisation/' + ${article.id} + '\''">
+                <div class="awareness-icon">
+                    <span th:text="${article.category == 'Soins' ? '⚕️' :
+                                    article.category == 'Abandon' ? '🚫' :
+                                    article.category == 'Stérilisation' ? '✂️' :
+                                    article.category == 'Droits' ? '🏛️' :
+                                    article.category == 'Rue' ? '🏘️' :
+                                    article.category == 'Vaccins' ? '💉' : '📚'}">⚕️</span>
+                </div>
+                <span class="awareness-badge" th:text="${article.category}">Catégorie</span>
+                <h3 th:text="${article.title}">Titre de l'article</h3>
+                <p th:text="${#strings.abbreviate(article.content, 100)}">Contenu résumé...</p>
+                <div class="awareness-meta">
+                    <span>👤 <span th:text="${article.author}">Auteur</span></span>
+                    <span>👁️ <span th:text="${article.readCount}">0</span></span>
+                    <span>❤️ <span th:text="${article.likeCount}">0</span></span>
+                </div>
+                <a class="awareness-link" th:href="@{'/sensibilisation/' + ${article.id}}">Lire l'article →</a>
+            </div>
+        </div>
+
+        <!-- Bouton Voir tous les posts -->
+        <div class="voir-tous-btn-wrapper" th:if="${sensibilisationArticles != null and !sensibilisationArticles.isEmpty()}">
+            <a href="/sensibilisation" class="btn-voir-tous">
+                📋 Voir tous les articles
+            </a>
+        </div>
+
+        <!-- Message si aucun article -->
+        <div th:if="${sensibilisationArticles == null or sensibilisationArticles.isEmpty()}" class="empty-awareness">
+            <div style="font-size: 4rem; margin-bottom: 20px;">📚</div>
+            <h3>Aucun article disponible</h3>
+            <p>Sois le premier à partager un article de sensibilisation !</p>
+            <div th:if="${session.user != null}" style="margin-top: 20px;">
+                <button class="btn btn-terracotta" onclick="window.location.href='/sensibilisation/create'">
+                    ✏️ Publier un article
+                </button>
+            </div>
+        </div>
+    </section>
+</div>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+<div th:fragment="adoptionSection">
+    <section id="adoption">
+        <div class="section-header fade-in">
+            <div class="section-badge">🏠 Adoption</div>
+            <h2 class="section-title">Des animaux qui cherchent un <em>foyer</em></h2>
+            <p class="section-desc">Chaque animal ici mérite une famille aimante. Trouvez votre compagnon idéal.</p>
+        </div>
+
+        <!-- BOUTON PUBLIER UNE ANNONCE -->
+        <div class="publish-section" style="text-align: right; margin-bottom: 20px;">
+            <button class="btn btn-terracotta" onclick="openPublishModal()" style="display: inline-flex; align-items: center; gap: 10px;">
+                <span style="font-size: 1.2rem;">+</span> Publier une annonce d'adoption
+            </button>
+        </div>
+
+        <!-- Filtres -->
+        <div class="filters fade-in">
+            <button class="filter-btn active" onclick="filterAdoptions('all')">Tous</button>
+            <button class="filter-btn" onclick="filterAdoptions('Chien')">🐕 Chiens</button>
+            <button class="filter-btn" onclick="filterAdoptions('Chat')">🐈 Chats</button>
+            <button class="filter-btn" onclick="filterAdoptions('Lapin')">🐇 Lapins</button>
+            <button class="filter-btn" onclick="filterAdoptions('Oiseau')">🦜 Oiseaux</button>
+            <button class="filter-btn" onclick="filterAdoptions('urgent')">🐾 Urgences</button>
+        </div>
+
+        <!-- Grille des annonces - ❌ PLUS DE BOUTON FAVORI -->
+        <div class="animals-grid" id="adoptions-grid">
+            <!-- Carte adoption dynamique -->
+            <div class="adopt-card fade-in" th:each="post, iterStat : ${recentAdoptions}" th:if="${iterStat.index < 6}" th:onclick="'window.location.href=\'/adoption/' + ${post.id} + '\''">
+                <div class="adopt-img" th:classappend="'bg' + (${iterStat.index % 4 + 1})">
+                    <span th:text="${post.animalType == 'Chien' ? '🐕' :
+                                    post.animalType == 'Chat' ? '🐈' :
+                                    post.animalType == 'Lapin' ? '🐇' :
+                                    post.animalType == 'Oiseau' ? '🦜' : '🐾'}">🐕</span>
+                    <div class="urgency-badge" th:class="${post.isUrgent} ? 'badge-urgent' : 'badge-new'"
+                         th:if="${post.isUrgent or iterStat.index < 2}"
+                         th:text="${post.isUrgent} ? 'Urgent' : 'Nouveau'">Nouveau</div>
+                </div>
+                <div class="adopt-body">
+                    <div class="adopt-name" th:text="${post.title}">Max</div>
+                    <div class="adopt-details">
+                        <div class="adopt-detail" th:text="${post.animalType} + ' ' + ${post.breed}">🐕 Labrador</div>
+                        <div class="adopt-detail" th:text="'📅 ' + ${post.age} + ' ans'">📅 2 ans</div>
+                        <div class="adopt-detail" th:text="'📍 ' + ${post.location}">📍 Casablanca</div>
+                    </div>
+                    <div class="adopt-desc" th:text="${#strings.abbreviate(post.description, 100)}">Max est un labrador affectueux et joueur...</div>
+                    <div class="adopt-actions">
+                        <!-- ✅ SEUL BOUTON ADOPTER - PLUS DE FAVORIS -->
+                        <button class="btn btn-primary" style="width: 100%; padding: 12px"
+                                th:onclick="'event.stopPropagation(); openAdoptionRequest(' + ${post.id} + ')'">
+                            🐾 Demander l'adoption
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cartes statiques de fallback (sans favoris) -->
+            <div class="adopt-card fade-in" th:if="${#lists.size(recentAdoptions) < 2}">
+                <div class="adopt-img bg2">
+                    🐈
+                    <div class="urgency-badge badge-new">Nouveau</div>
+                </div>
+                <div class="adopt-body">
+                    <div class="adopt-name">Bella</div>
+                    <div class="adopt-details">
+                        <div class="adopt-detail">🐈 Persan</div>
+                        <div class="adopt-detail">📅 1 an</div>
+                        <div class="adopt-detail">📍 Rabat</div>
+                    </div>
+                    <div class="adopt-desc">Bella est une chatte persane douce et câline. Stérilisée, à jour des vaccins.</div>
+                    <div class="adopt-actions">
+                        <button class="btn btn-primary" style="width: 100%; padding: 12px" onclick="event.stopPropagation(); openModal('signup')">
+                            🐾 Demander l'adoption
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="adopt-card fade-in" th:if="${#lists.size(recentAdoptions) < 3}">
+                <div class="adopt-img bg3">🐕‍🦺</div>
+                <div class="adopt-body">
+                    <div class="adopt-name">Rocky</div>
+                    <div class="adopt-details">
+                        <div class="adopt-detail">🐕 Berger</div>
+                        <div class="adopt-detail">📅 3 ans</div>
+                        <div class="adopt-detail">📍 Marrakech</div>
+                    </div>
+                    <div class="adopt-desc">Rocky est un berger allemand bien éduqué. Protecteur mais doux.</div>
+                    <div class="adopt-actions">
+                        <button class="btn btn-primary" style="width: 100%; padding: 12px" onclick="event.stopPropagation(); openModal('signup')">
+                            🐾 Demander l'adoption
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bouton Voir plus -->
+        <div style="text-align: center; margin-top: 40px;">
+            <button class="btn btn-outline btn-lg" onclick="window.location.href='/adoption'">Voir tous les animaux →</button>
+        </div>
+    </section>
+</div>
+</body>
+</html>

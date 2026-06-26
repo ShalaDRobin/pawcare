@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'PawCare - ' + ${post.title}">PawCare - Discussion</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/pawcare-style.css}">
+    <style>
+        .forum-detail-container {
+            max-width: 900px;
+            margin: 120px auto 60px;
+            padding: 0 30px;
+        }
+
+        .forum-post-header {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+
+        .post-meta-info {
+            display: flex;
+            gap: 20px;
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin: 15px 0;
+        }
+
+        .post-content {
+            font-size: 1rem;
+            line-height: 1.8;
+            color: var(--text);
+            margin: 30px 0;
+            white-space: pre-wrap;
+        }
+
+        .post-stats-large {
+            display: flex;
+            gap: 30px;
+            padding: 20px 0;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            align-items: center;
+        }
+
+        .comments-section {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: var(--shadow);
+        }
+
+        .comment-card {
+            border-bottom: 1px solid var(--border);
+            padding: 25px 0;
+        }
+
+        .comment-card:last-child {
+            border-bottom: none;
+        }
+
+        .reply-card {
+            margin-left: 60px;
+            background: var(--cream);
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+
+        .comment-form {
+            margin-top: 40px;
+            padding: 30px;
+            background: var(--cream);
+            border-radius: 20px;
+        }
+
+        .comment-form textarea {
+            width: 100%;
+            padding: 15px;
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.95rem;
+            resize: vertical;
+            box-sizing: border-box;
+            margin-bottom: 15px;
+        }
+
+        .comment-form textarea:focus {
+            outline: none;
+            border-color: var(--forest);
+        }
+
+        .like-button {
+            background: transparent;
+            border: none;
+            color: var(--terracotta);
+            font-size: 1.1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 0;
+        }
+
+        .like-button:hover {
+            transform: scale(1.1);
+        }
+
+        .reply-form-container {
+            display: none;
+            margin-top: 15px;
+            margin-left: 60px;
+        }
+
+        .reply-form-container.show {
+            display: block;
+        }
+
+        .reply-form-container textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.9rem;
+            resize: vertical;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--forest);
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 20px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-size: 1rem;
+        }
+
+        .back-button:hover {
+            color: var(--terracotta);
+        }
+
+        .locked-banner {
+            background: #f8f8f8;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 15px 20px;
+            color: var(--text-light);
+            font-style: italic;
+            margin-top: 30px;
+        }
+
+        .empty-comments {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-light);
+        }
+
+        .delete-comment-btn {
+            background: transparent;
+            border: none;
+            color: var(--terracotta);
+            font-size: 0.8rem;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .delete-comment-btn:hover {
+            background: var(--terracotta);
+            color: white;
+        }
+    </style>
+
+    <!-- ✅ Variables de session injectées par Thymeleaf - Version CORRIGÉE avec window -->
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        // Variables globales accessibles depuis forum.js
+        window.postId = /*[[${post.id}]]*/ null;
+        window.isLocked = /*[[${post.isLocked}]]*/ false;
+        window.isAuthenticated = /*[[${session.user != null}]]*/ false;
+        window.currentUserId = /*[[${session.user != null ? session.user.id : null}]]*/ null;
+        window.isOwner = /*[[${isOwner}]]*/ false;
+        window.isAdmin = /*[[${isAdmin}]]*/ false;
+
+        // Console.log pour déboguer
+        console.log('✅ Variables window initialisées:', {
+            postId: window.postId,
+            isLocked: window.isLocked,
+            isAuthenticated: window.isAuthenticated,
+            currentUserId: window.currentUserId,
+            isOwner: window.isOwner,
+            isAdmin: window.isAdmin
+        });
+        /*]]>*/
+    </script>
+</head>
+
+<body>
+<div th:replace="~{pawcare/fragments/navbar :: navbar}"></div>
+
+<div class="forum-detail-container">
+    <!-- ✅ RETOUR À L'ACCUEIL - CORRIGÉ -->
+    <a href="/" class="back-button">← Retour à l'accueil</a>
+
+    <!-- Post principal -->
+    <div class="forum-post-header">
+        <div class="post-header">
+            <div class="avatar av1" th:text="${#strings.substring(post.user.firstName, 0, 1)}">S</div>
+            <div class="post-meta">
+                <div class="post-author" th:text="${post.user.firstName} + ' ' + ${post.user.lastName}">Samira B.</div>
+                <div class="post-time" th:text="${#temporals.format(post.createdAt, 'dd MMMM yyyy à HH:mm')}">2 Février 2026 à 14:30</div>
+            </div>
+            <span class="post-category-tag" style="margin-left: auto;" th:text="${post.category.name}">Santé</span>
+        </div>
+
+        <h1 class="detail-title" style="margin: 20px 0;" th:text="${post.title}">Titre du post</h1>
+
+        <div class="post-content" th:text="${post.content}">Contenu détaillé du post...</div>
+
+        <div class="post-stats-large">
+            <div class="post-stat">👁️ <span th:text="${post.viewCount}">0</span> vues</div>
+            <div class="post-stat">💬 <span id="commentCountDisplay" th:text="${post.commentCount}">0</span> réponses</div>
+            <button class="like-button" onclick="likePost()">
+                ❤️ <span id="likeCount" th:text="${post.likeCount}">0</span> likes
+            </button>
+            <!-- Actions propriétaire / admin -->
+            <div th:if="${isOwner or isAdmin}" style="margin-left:auto; display:flex; gap:10px;">
+                <button class="btn btn-primary" style="padding:6px 14px; font-size:0.85rem;"
+                        th:onclick="'window.location.href=\'/forum/post/' + ${post.id} + '/modifier\''">✏️ Modifier</button>
+                <button class="btn btn-outline" style="padding:6px 14px; font-size:0.85rem; border-color:var(--terracotta); color:var(--terracotta);"
+                        th:onclick="'deletePost(' + ${post.id} + ')'">🗑️ Supprimer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section commentaires -->
+    <div class="comments-section">
+        <h3 style="margin-bottom: 30px;">
+            💬 Réponses (<span id="commentCount" th:text="${post.commentCount}">0</span>)
+        </h3>
+
+        <!-- Liste des commentaires -->
+        <div id="commentsList">
+            <div th:if="${comments != null and !comments.isEmpty()}">
+                <div th:each="comment : ${comments}" th:if="${comment.parentComment == null}" class="comment-card"
+                     th:id="'comment-' + ${comment.id}">
+                    <div class="post-header">
+                        <div class="avatar av2" th:text="${#strings.substring(comment.user.firstName, 0, 1)}">K</div>
+                        <div class="post-meta">
+                            <div class="post-author" th:text="${comment.user.firstName} + ' ' + ${comment.user.lastName}">Auteur</div>
+                            <div class="post-time" th:text="${#temporals.format(comment.createdAt, 'dd MMM yyyy à HH:mm')}">date</div>
+                        </div>
+                        <!-- ✅ BOUTON SUPPRIMER - Visible uniquement pour l'auteur du commentaire -->
+                        <div th:if="${session.user != null and session.user.id == comment.user.id}" style="margin-left: auto;">
+                            <button class="delete-comment-btn"
+                                    th:onclick="'deleteComment(' + ${comment.id} + ')'"
+                                    title="Supprimer ce commentaire">
+                                🗑️
+                            </button>
+                        </div>
+                    </div>
+                    <p style="margin: 15px 0 15px 50px;" th:text="${comment.content}">Contenu...</p>
+                    <div style="display:flex; gap:15px; margin-left:50px;">
+                        <button class="like-button" style="font-size:0.85rem;"
+                                th:onclick="'likeComment(' + ${comment.id} + ')'">
+                            ❤️ <span th:text="${comment.likeCount}">0</span>
+                        </button>
+                        <button th:if="${!post.isLocked}" class="btn btn-outline"
+                                style="padding:4px 14px; font-size:0.85rem;"
+                                th:onclick="'toggleReplyForm(' + ${comment.id} + ')'">Répondre</button>
+                    </div>
+
+                    <!-- Réponses imbriquées -->
+                    <div th:each="reply : ${comments}"
+                         th:if="${reply.parentComment != null and reply.parentComment.id == comment.id}"
+                         class="reply-card"
+                         th:id="'comment-' + ${reply.id}">
+                        <div class="post-header">
+                            <div class="avatar av3" th:text="${#strings.substring(reply.user.firstName, 0, 1)}">N</div>
+                            <div class="post-meta">
+                                <div class="post-author" th:text="${reply.user.firstName} + ' ' + ${reply.user.lastName}">Répondant</div>
+                                <div class="post-time" th:text="${#temporals.format(reply.createdAt, 'dd MMM yyyy à HH:mm')}">date</div>
+                            </div>
+                            <!-- ✅ BOUTON SUPPRIMER - Visible uniquement pour l'auteur de la réponse -->
+                            <div th:if="${session.user != null and session.user.id == reply.user.id}" style="margin-left: auto;">
+                                <button class="delete-comment-btn"
+                                        th:onclick="'deleteComment(' + ${reply.id} + ')'"
+                                        title="Supprimer cette réponse">
+                                    🗑️
+                                </button>
+                            </div>
+                        </div>
+                        <p style="margin:10px 0 0 45px;" th:text="${reply.content}">Réponse...</p>
+                    </div>
+
+                    <!-- Formulaire réponse inline -->
+                    <div th:if="${!post.isLocked}"
+                         th:id="'replyForm-' + ${comment.id}"
+                         class="reply-form-container">
+                        <textarea rows="3"
+                                  th:id="'replyTextarea-' + ${comment.id}"
+                                  placeholder="Votre réponse..."></textarea>
+                        <div style="display:flex; gap:10px;">
+                            <button class="btn btn-primary" style="padding:8px 20px; font-size:0.85rem;"
+                                    th:onclick="'submitReply(' + ${comment.id} + ')'">Envoyer</button>
+                            <button class="btn btn-outline" style="padding:8px 20px; font-size:0.85rem;"
+                                    th:onclick="'toggleReplyForm(' + ${comment.id} + ')'">Annuler</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div th:if="${comments == null or comments.isEmpty()}" class="empty-comments">
+                <p>💬 Aucune réponse pour le moment. Soyez le premier !</p>
+            </div>
+        </div>
+
+        <!-- Formulaire nouveau commentaire -->
+        <div th:if="${!post.isLocked}" class="comment-form">
+            <h4 style="margin-bottom: 15px;">✍️ Ajouter une réponse</h4>
+            <textarea id="commentInput" rows="4" placeholder="Votre réponse..."></textarea>
+            <button class="btn btn-primary" id="publishCommentBtn" onclick="addComment()">📤 Publier la réponse</button>
+        </div>
+
+        <div th:if="${post.isLocked}" class="locked-banner">
+            🔒 Ce post est verrouillé, vous ne pouvez plus commenter.
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{pawcare/fragments/footer :: footer}"></div>
+<div th:replace="~{pawcare/fragments/toast :: toast}"></div>
+
+<!-- Ordre de chargement CORRIGÉ -->
+<script th:src="@{/js/pawcare-main.js}"></script>
+<!-- forum.js chargé APRÈS les variables window -->
+<script th:src="@{/js/forum.js}"></script>
+
+<!-- Script inline simplifié - Utilise les fonctions de forum.js -->
+<script>
+    console.log('🚀 Page forum-post.html chargée');
+    console.log('📌 window.postId =', window.postId);
+    console.log('📌 window.isAuthenticated =', window.isAuthenticated);
+    console.log('📌 window.isLocked =', window.isLocked);
+
+    // ============================================
+    // FONCTIONS SPÉCIFIQUES À CETTE PAGE
+    // ============================================
+
+    // likePost - version locale qui utilise les variables window
+    function likePost() {
+        if (!window.isAuthenticated) {
+            openModal('login');
+            return;
+        }
+
+        console.log('❤️ Like du post', window.postId);
+
+        fetch('/forum/post/' + window.postId + '/liker', {
+            method: 'POST',
+            credentials: 'include'
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                const span = document.getElementById('likeCount');
+                if (span) {
+                    span.textContent = parseInt(span.textContent) + 1;
+                }
+                showToast('❤️ Like ajouté !');
+            } else {
+                showToast('❌ ' + (data.message || 'Erreur'));
+            }
+        })
+        .catch(() => showToast('❌ Erreur lors du like'));
+    }
+
+    // likeComment - version locale
+    function likeComment(commentId) {
+        if (!window.isAuthenticated) {
+            openModal('login');
+            return;
+        }
+
+        console.log('❤️ Like du commentaire', commentId);
+
+        fetch('/forum/comment/' + commentId + '/liker', {
+            method: 'POST',
+            credentials: 'include'
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                showToast('❤️ Like ajouté !');
+                // Mettre à jour le compteur
+                const buttons = document.querySelectorAll(`button[onclick*="likeComment(${commentId})"]`);
+                buttons.forEach(btn => {
+                    const span = btn.querySelector('span');
+                    if (span) {
+                        span.textContent = parseInt(span.textContent) + 1;
+                    }
+                });
+            } else {
+                showToast('❌ ' + (data.message || 'Erreur'));
+            }
+        })
+        .catch(() => showToast('❌ Erreur lors du like'));
+    }
+
+    // toggleReplyForm - version locale
+    function toggleReplyForm(commentId) {
+        if (!window.isAuthenticated) {
+            openModal('login');
+            return;
+        }
+
+        const form = document.getElementById('replyForm-' + commentId);
+        if (!form) return;
+
+        form.classList.toggle('show');
+        if (form.classList.contains('show')) {
+            const ta = document.getElementById('replyTextarea-' + commentId);
+            if (ta) ta.focus();
+        }
+    }
+
+    // submitReply - version locale
+    function submitReply(commentId) {
+        if (!window.isAuthenticated) {
+            openModal('login');
+            return;
+        }
+
+        if (window.isLocked) {
+            showToast('❌ Ce post est verrouillé');
+            return;
+        }
+
+        const textarea = document.getElementById('replyTextarea-' + commentId);
+        const content = textarea ? textarea.value.trim() : '';
+
+        if (!content) {
+            showToast('⚠️ Veuillez écrire une réponse');
+            return;
+        }
+
+        console.log('📤 Envoi d\'une réponse pour le commentaire', commentId);
+
+        showToast('📤 Envoi en cours...');
+
+        fetch('/forum/post/' + window.postId + '/comment/' + commentId + '/repondre', {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'content=' + encodeURIComponent(content)
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                showToast('✅ Réponse ajoutée !');
+                textarea.value = '';
+                setTimeout(() => window.location.reload(), 800);
+            } else {
+                showToast('❌ ' + (data.message || 'Erreur'));
+            }
+        })
+        .catch(() => showToast('❌ Erreur lors de l\'envoi'));
+    }
+
+    // deletePost - version locale - CORRIGÉE
+    function deletePost(id) {
+        if (!confirm('Supprimer ce post ? Cette action est irréversible.')) return;
+
+        fetch('/forum/post/' + id + '/supprimer', {
+            method: 'POST',
+            credentials: 'include'
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                showToast('✅ Post supprimé');
+                setTimeout(() => window.location.href = '/', 1000);
+            } else {
+                showToast('❌ ' + data.message);
+            }
+        })
+        .catch(() => showToast('❌ Erreur lors de la suppression'));
+    }
+
+    // ============================================
+    // 🆕 SUPPRIMER UN COMMENTAIRE (uniquement par l'auteur)
+    // ============================================
+
+    function deleteComment(commentId) {
+        // Vérifier si l'utilisateur est authentifié
+        if (!window.isAuthenticated) {
+            openModal('login');
+            return;
+        }
+
+        // Confirmation avant suppression
+        if (!confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ? Cette action est irréversible.')) {
+            return;
+        }
+
+        console.log('🗑️ Suppression du commentaire', commentId);
+        showToast('📤 Suppression en cours...');
+
+        fetch('/forum/comment/' + commentId + '/supprimer', {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            console.log('📥 Réponse reçue, status:', response.status);
+            if (!response.ok) {
+                throw new Error('HTTP ' + response.status);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('📥 Données reçues:', data);
+            if (data.success) {
+                // Supprimer l'élément du DOM
+                const commentElement = document.getElementById('comment-' + commentId);
+                if (commentElement) {
+                    // Animation de disparition
+                    commentElement.style.transition = 'all 0.3s ease';
+                    commentElement.style.opacity = '0';
+                    commentElement.style.transform = 'translateX(-20px)';
+
+                    setTimeout(() => {
+                        commentElement.remove();
+                        // Mettre à jour le compteur de commentaires
+                        const commentCountSpan = document.getElementById('commentCount');
+                        if (commentCountSpan) {
+                            commentCountSpan.textContent = parseInt(commentCountSpan.textContent) - 1;
+                        }
+                        const commentCountDisplay = document.getElementById('commentCountDisplay');
+                        if (commentCountDisplay) {
+                            commentCountDisplay.textContent = parseInt(commentCountDisplay.textContent) - 1;
+                        }
+                        showToast('✅ Commentaire supprimé !');
+                    }, 300);
+                } else {
+                    // Si l'élément n'est pas trouvé, recharger la page
+                    setTimeout(() => window.location.reload(), 500);
+                }
+            } else {
+                showToast('❌ ' + (data.message || 'Erreur lors de la suppression'));
+            }
+        })
+        .catch(error => {
+            console.error('❌ Erreur:', error);
+            showToast('❌ Erreur lors de la suppression: ' + error.message);
+        });
+    }
+
+    // ✅ EXPORTER les fonctions pour qu'elles soient accessibles depuis le HTML
+    window.likePost = likePost;
+    window.likeComment = likeComment;
+    window.toggleReplyForm = toggleReplyForm;
+    window.submitReply = submitReply;
+    window.deletePost = deletePost;
+    window.deleteComment = deleteComment; // ✅ Nouvelle fonction exportée
+
+    // Vérification que addComment est bien disponible depuis forum.js
+    console.log('✅ addComment depuis forum.js:', typeof window.addComment);
+    console.log('✅ deleteComment disponible:', typeof window.deleteComment);
+
+    // Test du bouton au chargement
+    document.addEventListener('DOMContentLoaded', function() {
+        const btn = document.getElementById('publishCommentBtn');
+        if (btn) {
+            console.log('✅ Bouton "Publier" trouvé');
+            console.log('📌 onclick du bouton:', btn.getAttribute('onclick'));
+        } else {
+            console.error('❌ Bouton "Publier" non trouvé !');
+        }
+
+        // Compter les boutons de suppression
+        const deleteBtns = document.querySelectorAll('.delete-comment-btn');
+        console.log('🗑️ Nombre de boutons supprimer:', deleteBtns.length);
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Publier un article - PawCare</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/pawcare-style.css}">
+  <style>
+    .form-container {
+        max-width: 800px;
+        margin: 120px auto 60px;
+        padding: 0 30px;
+    }
+    .form-card {
+        background: white;
+        border-radius: 24px;
+        padding: 40px;
+        box-shadow: var(--shadow);
+    }
+    .form-group {
+        margin-bottom: 20px;
+    }
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: var(--forest);
+    }
+    .form-group input, .form-group select, .form-group textarea {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        font-family: inherit;
+        font-size: 1rem;
+    }
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+    .form-actions {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+    }
+    .btn-primary {
+        background: var(--terracotta);
+        color: white;
+        border: none;
+        padding: 14px 24px;
+        border-radius: 50px;
+        font-weight: 600;
+        cursor: pointer;
+        flex: 2;
+    }
+    .btn-outline {
+        background: transparent;
+        border: 2px solid var(--terracotta);
+        color: var(--terracotta);
+        padding: 14px 24px;
+        border-radius: 50px;
+        font-weight: 600;
+        cursor: pointer;
+        flex: 1;
+        text-align: center;
+        text-decoration: none;
+    }
+    .back-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--forest);
+        text-decoration: none;
+        font-weight: 600;
+        margin-bottom: 20px;
+    }
+    .tag-input {
+        display: flex;
+        gap: 10px;
+    }
+    .tag-input input {
+        flex: 1;
+    }
+    .tag-input button {
+        padding: 12px 20px;
+    }
+    .tag-list {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 10px;
+    }
+    .tag-item {
+        background: var(--cream);
+        padding: 4px 12px;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    .tag-item .remove {
+        cursor: pointer;
+        color: var(--terracotta);
+        font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+<div th:replace="~{pawcare/fragments/navbar :: navbar}"></div>
+
+<div class="form-container">
+  <a href="/" class="back-button">← Retour à l'accueil</a>
+
+  <div class="form-card">
+    <h1 style="font-family: 'Playfair Display', serif; font-size: 2rem; margin-bottom: 30px;">✏️ Publier un article</h1>
+
+    <form id="createForm" th:action="@{/sensibilisation/create}" method="post" enctype="multipart/form-data">
+      <div class="form-group">
+        <label>Titre de l'article *</label>
+        <input type="text" name="title" placeholder="Titre accrocheur..." required>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Catégorie *</label>
+          <select name="category" required>
+            <option value="">Sélectionnez...</option>
+            <option value="Soins">⚕️ Soins</option>
+            <option value="Abandon">🚫 Abandon</option>
+            <option value="Stérilisation">✂️ Stérilisation</option>
+            <option value="Droits">🏛️ Droits des animaux</option>
+            <option value="Rue">🏘️ Animaux de rue</option>
+            <option value="Vaccins">💉 Vaccins</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Auteur</label>
+          <input type="text" name="author" placeholder="Nom de l'auteur" th:value="${session.user.firstName + ' ' + session.user.lastName}">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Résumé (optionnel)</label>
+        <textarea name="summary" rows="2" placeholder="Un bref résumé de l'article..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Contenu *</label>
+        <textarea name="content" rows="10" placeholder="Rédigez votre article ici..." required></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Image de couverture (optionnel)</label>
+        <input type="file" name="images" accept="image/*">
+      </div>
+
+      <div class="form-group">
+        <label>Tags (appuyez sur Entrée pour ajouter)</label>
+        <div class="tag-input">
+          <input type="text" id="tagInput" placeholder="Ex: santé, vaccination, chien..." onkeydown="if(event.key==='Enter'){event.preventDefault();addTag();}">
+          <button type="button" class="btn btn-outline" onclick="addTag()" style="padding: 12px 20px;">Ajouter</button>
+        </div>
+        <div class="tag-list" id="tagList"></div>
+        <input type="hidden" name="tags" id="tagsHidden">
+      </div>
+
+      <div class="form-group">
+        <label style="display: flex; align-items: center; gap: 10px;">
+          <input type="checkbox" name="isPublished" value="true" checked>
+          Publier immédiatement
+        </label>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn-primary">📢 Publier l'article</button>
+        <a href="/" class="btn-outline">Annuler</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div th:replace="~{pawcare/fragments/footer :: footer}"></div>
+<div th:replace="~{pawcare/fragments/toast :: toast}"></div>
+
+<script th:src="@{/js/pawcare-main.js}"></script>
+<script>
+  let tags = [];
+
+  function addTag() {
+      const input = document.getElementById('tagInput');
+      const tag = input.value.trim();
+      if (tag && !tags.includes(tag)) {
+          tags.push(tag);
+          updateTagDisplay();
+          input.value = '';
+      }
+  }
+
+  function removeTag(index) {
+      tags.splice(index, 1);
+      updateTagDisplay();
+  }
+
+  function updateTagDisplay() {
+      const list = document.getElementById('tagList');
+      list.innerHTML = tags.map((tag, i) =>
+          `<span class="tag-item">${tag} <span class="remove" onclick="removeTag(${i})">×</span></span>`
+      ).join('');
+      document.getElementById('tagsHidden').value = tags.join(',');
+  }
+
+  // Validation du formulaire
+  document.getElementById('createForm').addEventListener('submit', function(e) {
+      const title = document.querySelector('input[name="title"]').value.trim();
+      const content = document.querySelector('textarea[name="content"]').value.trim();
+      const category = document.querySelector('select[name="category"]').value;
+
+      if (!title) { e.preventDefault(); showToast('Veuillez entrer un titre'); return false; }
+      if (!content || content.length < 50) {
+          e.preventDefault();
+          showToast('Le contenu doit contenir au moins 50 caractères');
+          return false;
+      }
+      if (!category) { e.preventDefault(); showToast('Veuillez sélectionner une catégorie'); return false; }
+  });
+</script>
+</body>
+</html>

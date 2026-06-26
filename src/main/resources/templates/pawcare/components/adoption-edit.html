@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modifier l'annonce - PawCare</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/pawcare-style.css}">
+    <style>
+        .edit-container {
+            max-width: 800px;
+            margin: 120px auto 60px;
+            padding: 0 30px;
+        }
+        .edit-card {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: var(--shadow);
+        }
+        .edit-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: var(--dark);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--forest);
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 1rem;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .checkbox-group {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: normal;
+        }
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        .btn-primary {
+            background: var(--terracotta);
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            flex: 2;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--terracotta);
+            color: var(--terracotta);
+            padding: 14px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            flex: 1;
+            text-decoration: none;
+            text-align: center;
+        }
+        .current-image {
+            margin-top: 10px;
+            padding: 10px;
+            background: var(--cream);
+            border-radius: 12px;
+        }
+        .current-image img {
+            max-width: 200px;
+            border-radius: 12px;
+        }
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--forest);
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+<div th:replace="~{pawcare/fragments/navbar :: navbar}"></div>
+
+<div class="edit-container">
+    <a href="javascript:history.back()" class="back-button">← Retour</a>
+
+    <div class="edit-card">
+        <h1 class="edit-title">Modifier l'annonce</h1>
+
+        <form id="editForm" th:action="@{/adoption/{id}/edit(id=${post.id})}" method="post" enctype="multipart/form-data">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Titre *</label>
+                    <input type="text" name="title" th:value="${post.title}" required>
+                </div>
+                <div class="form-group">
+                    <label>Type d'animal *</label>
+                    <select name="animalType" required>
+                        <option value="Chien" th:selected="${post.animalType == 'Chien'}">🐕 Chien</option>
+                        <option value="Chat" th:selected="${post.animalType == 'Chat'}">🐈 Chat</option>
+                        <option value="Lapin" th:selected="${post.animalType == 'Lapin'}">🐇 Lapin</option>
+                        <option value="Oiseau" th:selected="${post.animalType == 'Oiseau'}">🦜 Oiseau</option>
+                        <option value="Autre" th:selected="${post.animalType == 'Autre'}">🐾 Autre</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Race</label>
+                    <input type="text" name="breed" th:value="${post.breed}">
+                </div>
+                <div class="form-group">
+                    <label>Âge (années) *</label>
+                    <input type="number" name="age" th:value="${post.age}" step="0.5" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Sexe</label>
+                    <select name="gender">
+                        <option value="" th:selected="${post.gender == null}">Non spécifié</option>
+                        <option value="Mâle" th:selected="${post.gender == 'Mâle'}">Mâle</option>
+                        <option value="Femelle" th:selected="${post.gender == 'Femelle'}">Femelle</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Taille</label>
+                    <select name="size">
+                        <option value="" th:selected="${post.size == null}">Non spécifié</option>
+                        <option value="Petit" th:selected="${post.size == 'Petit'}">Petit</option>
+                        <option value="Moyen" th:selected="${post.size == 'Moyen'}">Moyen</option>
+                        <option value="Grand" th:selected="${post.size == 'Grand'}">Grand</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Couleur</label>
+                    <input type="text" name="color" th:value="${post.color}">
+                </div>
+                <div class="form-group">
+                    <label>Localisation *</label>
+                    <input type="text" name="location" th:value="${post.location}" required>
+                </div>
+            </div>
+
+            <div class="checkbox-group">
+                <label>
+                    <input type="checkbox" name="vaccinated" th:checked="${post.vaccinated}"> Vacciné
+                </label>
+                <label>
+                    <input type="checkbox" name="sterilized" th:checked="${post.sterilized}"> Stérilisé
+                </label>
+                <label>
+                    <input type="checkbox" name="dewormed" th:checked="${post.dewormed}"> Vermifugé
+                </label>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>État de santé</label>
+                    <input type="text" name="healthStatus" th:value="${post.healthStatus}">
+                </div>
+                <div class="form-group">
+                    <label>Personnalité</label>
+                    <input type="text" name="personality" th:value="${post.personality}">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Description *</label>
+                <textarea name="description" rows="5" required th:text="${post.description}"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Photo actuelle</label>
+                <div class="current-image" th:if="${post.imageUrl != null and post.imageUrl != ''}">
+                    <img th:src="@{${post.imageUrl}}" alt="Photo actuelle" style="max-width: 200px;">
+                    <p style="font-size: 12px; color: gray; margin-top: 5px;">Pour changer, sélectionnez une nouvelle photo ci-dessous</p>
+                </div>
+                <div th:unless="${post.imageUrl != null and post.imageUrl != ''}">
+                    <p>Aucune photo</p>
+                </div>
+                <input type="file" name="images" accept="image/*" style="margin-top: 10px;">
+            </div>
+
+            <div class="checkbox-group">
+                <label>
+                    <input type="checkbox" name="isUrgent" th:checked="${post.isUrgent}">
+                    ⚠️ Marquer comme urgent
+                </label>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-primary">💾 Enregistrer les modifications</button>
+                <a th:href="@{/adoption/{id}(id=${post.id})}" class="btn-outline">Annuler</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div th:replace="~{pawcare/fragments/footer :: footer}"></div>
+<div th:replace="~{pawcare/fragments/toast :: toast}"></div>
+
+<script th:src="@{/js/pawcare-main.js}"></script>
+</body>
+</html>

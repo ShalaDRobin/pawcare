@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+<div th:fragment="hero">
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <div class="hero-badge-dot"></div>
+                Plateforme de protection animale
+            </div>
+            <h1>Chaque animal mérite un <em>foyer</em> aimant <span>&</span> une voix</h1>
+            <p class="hero-desc">PawCare connecte les animaux abandonnés avec des familles aimantes, aide à retrouver les animaux perdus et sensibilise à leur protection.</p>
+            <div class="hero-actions">
+                <button class="btn btn-primary btn-lg" th:onclick="'scrollToSection(\'adoption\')'">Adopter un animal</button>
+                <button class="btn btn-outline btn-lg" th:onclick="'scrollToSection(\'perdus\')'">Signaler un animal perdu</button>
+            </div>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <div class="stat-num" th:text="${totalAdoptions} + '+'">1 240+</div>
+                    <div class="stat-label">Animaux adoptés</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-num" th:text="${totalFound}">380</div>
+                    <div class="stat-label">Retrouvés cette année</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-num" th:text="${totalAssociations}">42</div>
+                    <div class="stat-label">Associations partenaires</div>
+                </div>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <!-- Carte adoption 1 -->
+            <div class="animal-card" th:each="post, iterStat : ${recentAdoptions}" th:if="${iterStat.index == 0}" th:onclick="'window.location.href=\'/adoption/' + ${post.id} + '\''">
+                <div class="animal-img" th:text="${post.animalType == 'Chien' ? '🐕' :
+                                                  post.animalType == 'Chat' ? '🐈' :
+                                                  post.animalType == 'Lapin' ? '🐇' :
+                                                  post.animalType == 'Oiseau' ? '🦜' : '🐾'}">🐕</div>
+                <div class="animal-info">
+                    <div class="animal-name" th:text="${post.title}">Max</div>
+                    <div class="animal-meta" th:text="${post.breed} + ' • ' + ${post.age} + ' ans • ' + ${post.location}">Labrador • 2 ans • Casablanca</div>
+                    <span class="animal-tag tag-adoption">À adopter</span>
+                </div>
+            </div>
+            <!-- Carte adoption 2 -->
+            <div class="animal-card" th:each="post, iterStat : ${recentAdoptions}" th:if="${iterStat.index == 1}" th:onclick="'window.location.href=\'/adoption/' + ${post.id} + '\''">
+                <div class="animal-img" th:text="${post.animalType == 'Chien' ? '🐕' :
+                                                  post.animalType == 'Chat' ? '🐈' :
+                                                  post.animalType == 'Lapin' ? '🐇' :
+                                                  post.animalType == 'Oiseau' ? '🦜' : '🐾'}">🐈</div>
+                <div class="animal-info">
+                    <div class="animal-name" th:text="${post.title}">Bella</div>
+                    <div class="animal-meta" th:text="${post.breed} + ' • ' + ${post.age} + ' ans • ' + ${post.location}">Persan • 1 an • Rabat</div>
+                    <span class="animal-tag tag-adoption">À adopter</span>
+                </div>
+            </div>
+            <!-- Carte perdu 1 -->
+            <div class="animal-card" th:each="post, iterStat : ${recentLost}" th:if="${iterStat.index == 0}" th:onclick="'window.location.href=\'/perdus/' + ${post.id} + '\''">
+                <div class="animal-img" th:text="${post.animalType == 'Chien' ? '🐕' :
+                                                  post.animalType == 'Chat' ? '🐈' :
+                                                  post.animalType == 'Lapin' ? '🐇' :
+                                                  post.animalType == 'Oiseau' ? '🦜' : '🐾'}">🐈</div>
+                <div class="animal-info">
+                    <div class="animal-name" th:text="${post.name} ?: 'Animal perdu'">Luna</div>
+                    <div class="animal-meta" th:text="${post.animalType} + ' • Perdu • ' + ${post.lastSeenLocation}">Chat • Perdue • Anfa</div>
+                    <span class="animal-tag tag-perdu">Perdu(e)</span>
+                </div>
+            </div>
+            <!-- Carte perdu 2 -->
+            <div class="animal-card" th:each="post, iterStat : ${recentLost}" th:if="${iterStat.index == 1}" th:onclick="'window.location.href=\'/perdus/' + ${post.id} + '\''">
+                <div class="animal-img" th:text="${post.animalType == 'Chien' ? '🐕' :
+                                                  post.animalType == 'Chat' ? '🐈' :
+                                                  post.animalType == 'Lapin' ? '🐇' :
+                                                  post.animalType == 'Oiseau' ? '🦜' : '🐾'}">🐇</div>
+                <div class="animal-info">
+                    <div class="animal-name" th:text="${post.name} ?: 'Animal perdu'">Caramel</div>
+                    <div class="animal-meta" th:text="${post.animalType} + ' • Perdu • ' + ${post.lastSeenLocation}">Lapin • 1 an • Rabat</div>
+                    <span class="animal-tag tag-perdu">Perdu(e)</span>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+</body>
+</html>

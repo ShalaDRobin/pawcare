@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Publier une annonce</title>
+</head>
+<body>
+
+<!-- ============================================ -->
+<!-- PUBLISH ADOPTION MODAL - FRAGMENT -->
+<!-- ============================================ -->
+
+<div th:fragment="publishModal">
+  <div class="modal-overlay" id="publishModal" style="display: none;">
+    <div class="report-modal" style="max-width: 700px; max-height: 90vh; overflow-y: auto;">
+      <button class="modal-close" onclick="closePublishModal()">✕</button>
+      <h2>📝 Publier une annonce d'adoption</h2>
+      <p style="color: var(--text-light); margin-bottom: 20px;">Remplissez le formulaire ci-dessous pour proposer un animal à l'adoption.</p>
+
+      <form id="publishForm" onsubmit="return publishAdoption(event)" enctype="multipart/form-data">
+        <!-- Ligne 1: Titre + Type -->
+        <div class="form-row">
+          <div class="form-group">
+            <label>Titre de l'annonce *</label>
+            <input type="text" name="title" placeholder="Ex: Max cherche une famille" required>
+          </div>
+          <div class="form-group">
+            <label>Type d'animal *</label>
+            <select name="animalType" required>
+              <option value="">Sélectionnez</option>
+              <option value="Chien">🐕 Chien</option>
+              <option value="Chat">🐈 Chat</option>
+              <option value="Lapin">🐇 Lapin</option>
+              <option value="Oiseau">🦜 Oiseau</option>
+              <option value="Autre">🐾 Autre</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Ligne 2: Race + Âge -->
+        <div class="form-row">
+          <div class="form-group">
+            <label>Race</label>
+            <input type="text" name="breed" placeholder="Ex: Labrador, Persan...">
+          </div>
+          <div class="form-group">
+            <label>Âge *</label>
+            <input type="number" name="age" placeholder="Âge en années" min="0" step="0.5" required>
+          </div>
+        </div>
+
+        <!-- Ligne 3: Sexe + Taille -->
+        <div class="form-row">
+          <div class="form-group">
+            <label>Sexe</label>
+            <select name="gender">
+              <option value="">Non spécifié</option>
+              <option value="Mâle">Mâle</option>
+              <option value="Femelle">Femelle</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Taille</label>
+            <select name="size">
+              <option value="">Non spécifié</option>
+              <option value="Petit">Petit</option>
+              <option value="Moyen">Moyen</option>
+              <option value="Grand">Grand</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Ligne 4: Couleur + Localisation -->
+        <div class="form-row">
+          <div class="form-group">
+            <label>Couleur</label>
+            <input type="text" name="color" placeholder="Ex: Roux, blanc et noir...">
+          </div>
+          <div class="form-group">
+            <label>Localisation *</label>
+            <input type="text" name="location" placeholder="Ville/Quartier" required>
+          </div>
+        </div>
+
+        <!-- Ligne 5: Santé -->
+        <div class="form-row">
+          <div class="form-group" style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap;">
+            <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+              <input type="checkbox" name="vaccinated" value="true"> Vacciné
+            </label>
+            <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+              <input type="checkbox" name="sterilized" value="true"> Stérilisé
+            </label>
+            <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+              <input type="checkbox" name="dewormed" value="true"> Vermifugé
+            </label>
+          </div>
+        </div>
+
+        <!-- Ligne 6: Santé + Personnalité -->
+        <div class="form-row">
+          <div class="form-group">
+            <label>État de santé</label>
+            <input type="text" name="healthStatus" placeholder="Ex: En bonne santé, suivi vétérinaire...">
+          </div>
+          <div class="form-group">
+            <label>Personnalité</label>
+            <input type="text" name="personality" placeholder="Ex: Calme, joueur, affectueux...">
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div class="form-group">
+          <label>Description *</label>
+          <textarea name="description" rows="4" placeholder="Décrivez l'animal, son caractère, ses besoins..." required></textarea>
+        </div>
+
+        <!-- Photos -->
+        <div class="form-group">
+          <label>Photos de l'animal</label>
+          <div class="upload-area" id="uploadArea" style="border: 2px dashed var(--border); border-radius: 12px; padding: 30px; text-align: center; cursor: pointer; transition: all 0.3s;">
+            <div class="upload-icon" style="font-size: 3rem; margin-bottom: 10px;">📸</div>
+            <p style="color: var(--text-light); margin-bottom: 5px;">Cliquez ou glissez-déposez des photos ici</p>
+            <p style="font-size: 0.8rem; color: var(--text-light);">Format: JPG, PNG (max 5 Mo)</p>
+            <input type="file" name="images" id="imageUpload" accept="image/*" multiple style="display: none;">
+          </div>
+          <div id="imagePreview" style="display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap;"></div>
+        </div>
+
+        <!-- Urgent -->
+        <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+          <input type="checkbox" name="isUrgent" id="isUrgent" value="true">
+          <label for="isUrgent" style="color: var(--terracotta); font-weight: 600; cursor: pointer;">⚠️ Marquer comme urgent</label>
+        </div>
+
+        <!-- Boutons -->
+        <div class="form-actions" style="display: flex; gap: 15px; margin-top: 30px;">
+          <button type="submit" class="btn btn-primary form-submit" style="flex: 2;">Publier l'annonce</button>
+          <button type="button" class="btn btn-outline" onclick="closePublishModal()" style="flex: 1;">Annuler</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- STYLES SPÉCIFIQUES POUR LE MODAL -->
+<!-- ============================================ -->
+
+<style>
+  /* Style du modal de publication */
+  #publishModal .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(4px);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+  }
+
+  #publishModal .report-modal {
+      background: white;
+      border-radius: 24px;
+      padding: 40px;
+      max-width: 700px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+      animation: modalFadeIn 0.3s ease;
+  }
+
+  @keyframes modalFadeIn {
+      from { opacity: 0; transform: translateY(-30px) scale(0.95); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  #publishModal .modal-close {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--text-light);
+      cursor: pointer;
+      transition: all 0.2s;
+  }
+
+  #publishModal .modal-close:hover {
+      color: var(--terracotta);
+      transform: rotate(90deg);
+  }
+
+  #publishModal .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-bottom: 15px;
+  }
+
+  #publishModal .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+  }
+
+  #publishModal .form-group label {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text);
+  }
+
+  #publishModal .form-group input,
+  #publishModal .form-group select,
+  #publishModal .form-group textarea {
+      padding: 10px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      transition: all 0.2s;
+      width: 100%;
+      box-sizing: border-box;
+  }
+
+  #publishModal .form-group input:focus,
+  #publishModal .form-group select:focus,
+  #publishModal .form-group textarea:focus {
+      outline: none;
+      border-color: var(--forest);
+      box-shadow: 0 0 0 3px rgba(52, 87, 69, 0.1);
+  }
+
+  #publishModal .form-group textarea {
+      resize: vertical;
+      min-height: 80px;
+  }
+
+  #publishModal .upload-area:hover {
+      border-color: var(--forest);
+      background: rgba(52, 87, 69, 0.05);
+  }
+
+  #publishModal .form-submit {
+      padding: 14px 30px;
+      font-size: 1rem;
+      font-weight: 600;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+      #publishModal .form-row {
+          grid-template-columns: 1fr;
+      }
+
+      #publishModal .report-modal {
+          padding: 25px 20px;
+      }
+  }
+</style>
+
+<!-- ============================================ -->
+<!-- SCRIPTS SPÉCIFIQUES POUR LE MODAL -->
+<!-- ============================================ -->
+
+<script>
+  // ✅ Fonction pour ouvrir le modal
+  function openPublishModal() {
+      if (!window.isAuthenticated) {
+          openModal('login');
+          return;
+      }
+      const modal = document.getElementById('publishModal');
+      if (modal) {
+          modal.style.display = 'flex';
+          document.body.style.overflow = 'hidden';
+      }
+  }
+
+  // ✅ Fonction pour fermer le modal
+  function closePublishModal() {
+      const modal = document.getElementById('publishModal');
+      if (modal) {
+          modal.style.display = 'none';
+          document.body.style.overflow = 'auto';
+      }
+      // Réinitialiser le formulaire
+      const form = document.getElementById('publishForm');
+      if (form) {
+          form.reset();
+      }
+      // Vider les previews
+      const preview = document.getElementById('imagePreview');
+      if (preview) {
+          preview.innerHTML = '';
+      }
+  }
+
+  // ✅ Fonction pour publier une annonce
+  function publishAdoption(event) {
+      event.preventDefault();
+
+      if (!window.isAuthenticated) {
+          openModal('login');
+          return false;
+      }
+
+      const form = document.getElementById('publishForm');
+      const formData = new FormData(form);
+
+      // Vérifier qu'au moins une image est sélectionnée
+      const images = document.getElementById('imageUpload');
+      if (images && images.files.length === 0) {
+          showToast('⚠️ Veuillez ajouter au moins une photo');
+          return false;
+      }
+
+      showToast('📤 Publication en cours...');
+
+      fetch('/adoption/publish', {
+          method: 'POST',
+          credentials: 'include',
+          body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+          if (data.success) {
+              showToast('✅ Annonce publiée avec succès !');
+              closePublishModal();
+              form.reset();
+              // Recharger la page après 1.5s
+              setTimeout(() => window.location.reload(), 1500);
+          } else {
+              showToast('❌ Erreur: ' + (data.message || 'Erreur inconnue'));
+          }
+      })
+      .catch(error => {
+          console.error('❌ Erreur:', error);
+          showToast('❌ Erreur lors de la publication');
+      });
+
+      return false;
+  }
+
+  // ✅ Upload d'images avec preview
+  document.addEventListener('DOMContentLoaded', function() {
+      const uploadArea = document.getElementById('uploadArea');
+      const imageUpload = document.getElementById('imageUpload');
+      const imagePreview = document.getElementById('imagePreview');
+
+      if (uploadArea && imageUpload) {
+          // Cliquer sur la zone d'upload
+          uploadArea.addEventListener('click', function(e) {
+              if (e.target === this || e.target.closest('.upload-area')) {
+                  imageUpload.click();
+              }
+          });
+
+          // Drag & Drop
+          uploadArea.addEventListener('dragover', function(e) {
+              e.preventDefault();
+              this.style.borderColor = 'var(--forest)';
+              this.style.background = 'rgba(52, 87, 69, 0.05)';
+          });
+
+          uploadArea.addEventListener('dragleave', function(e) {
+              e.preventDefault();
+              this.style.borderColor = 'var(--border)';
+              this.style.background = 'transparent';
+          });
+
+          uploadArea.addEventListener('drop', function(e) {
+              e.preventDefault();
+              this.style.borderColor = 'var(--border)';
+              this.style.background = 'transparent';
+              if (e.dataTransfer.files.length > 0) {
+                  imageUpload.files = e.dataTransfer.files;
+                  previewImages(e.dataTransfer.files);
+              }
+          });
+
+          // Changement de fichier
+          imageUpload.addEventListener('change', function() {
+              previewImages(this.files);
+          });
+      }
+  });
+
+  // ✅ Fonction pour prévisualiser les images
+  function previewImages(files) {
+      const preview = document.getElementById('imagePreview');
+      if (!preview) return;
+
+      preview.innerHTML = '';
+      const maxFiles = Math.min(files.length, 5);
+
+      for (let i = 0; i < maxFiles; i++) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+              const div = document.createElement('div');
+              div.style.cssText = 'width: 80px; height: 80px; border-radius: 10px; overflow: hidden; border: 2px solid var(--border); position: relative;';
+
+              const img = document.createElement('img');
+              img.src = e.target.result;
+              img.style.cssText = 'width: 100%; height: 100%; object-fit: cover;';
+
+              // Bouton pour supprimer l'image
+              const removeBtn = document.createElement('button');
+              removeBtn.textContent = '✕';
+              removeBtn.style.cssText = 'position: absolute; top: 2px; right: 2px; background: rgba(0,0,0,0.7); color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; cursor: pointer; line-height: 1;';
+              removeBtn.onclick = function(e) {
+                  e.stopPropagation();
+                  div.remove();
+                  // Supprimer le fichier du FileList (c'est plus complexe, on laisse)
+              };
+
+              div.appendChild(img);
+              div.appendChild(removeBtn);
+              preview.appendChild(div);
+          };
+          reader.readAsDataURL(files[i]);
+      }
+  }
+
+  // ✅ Exporter les fonctions pour qu'elles soient globales
+  window.openPublishModal = openPublishModal;
+  window.closePublishModal = closePublishModal;
+  window.publishAdoption = publishAdoption;
+  window.previewImages = previewImages;
+
+  console.log('✅ publish-modal.js chargé avec succès');
+</script>
+
+</body>
+</html>

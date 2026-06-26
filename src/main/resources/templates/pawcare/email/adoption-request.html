@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Demande d'adoption</title>
+    <style>
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background-color: #f9f7f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2D4A3E;
+        }
+        .content {
+            color: #333;
+        }
+        .button {
+            display: inline-block;
+            background: #C46B3F;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            text-decoration: none;
+            margin: 20px 0;
+        }
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div class="logo">🐾 PawCare</div>
+        <h2>Nouvelle demande d'adoption</h2>
+    </div>
+    <div class="content">
+        <p>Bonjour <strong th:text="${ownerName}">[Nom]</strong>,</p>
+        <p><strong th:text="${requesterName}">[Prénom]</strong> souhaite adopter <strong th:text="${animalName}">[Animal]</strong> !</p>
+
+        <div style="background: #f5f0e8; padding: 15px; border-radius: 12px; margin: 20px 0;">
+            <p><strong>📝 Message du demandeur :</strong></p>
+            <p th:text="${message}">[Message]</p>
+        </div>
+
+        <p><strong>📞 Contact :</strong> <span th:text="${requesterPhone}">[Téléphone]</span></p>
+        <p><strong>📧 Email :</strong> <span th:text="${requesterEmail}">[Email]</span></p>
+        <p><strong>🏠 Situation :</strong> <span th:text="${livingSituation}">[Situation]</span></p>
+
+        <a th:href="'http://localhost:8080/adoption/my-received-requests'" class="button">
+            📋 Voir la demande
+        </a>
+
+        <p>Connectez-vous à votre espace pour accepter ou refuser cette demande.</p>
+    </div>
+    <div class="footer">
+        <p>© 2026 PawCare - Plateforme de protection animale</p>
+    </div>
+</div>
+</body>
+</html>

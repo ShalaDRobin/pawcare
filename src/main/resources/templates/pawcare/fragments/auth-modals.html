@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+<div th:fragment="authModals">
+    <!-- AUTH MODAL -->
+    <div class="modal-overlay" id="authModal">
+        <div class="modal">
+            <button class="modal-close" onclick="closeModal()">✕</button>
+
+            <div class="modal-tabs">
+                <button class="modal-tab active" id="tab-login" onclick="switchTab('login')">Connexion</button>
+                <button class="modal-tab" id="tab-signup" onclick="switchTab('signup')">S'inscrire</button>
+            </div>
+
+            <!-- LOGIN FORM -->
+            <div class="form-panel active" id="panel-login">
+                <h2>Bon retour 🐾</h2>
+                <p>Connectez-vous pour accéder à votre espace PawCare.</p>
+
+                <form th:action="@{/auth/login}" method="post" onsubmit="return login(event)">
+                    <div class="form-group">
+                        <label>Adresse e-mail</label>
+                        <input type="email" name="email" placeholder="vous@exemple.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Mot de passe</label>
+                        <input type="password" name="password" placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary form-submit">Se connecter →</button>
+                </form>
+
+                <!-- ❌ SUPPRIMÉ : boutons Google et Apple -->
+            </div>
+
+            <!-- SIGNUP FORM -->
+            <div class="form-panel" id="panel-signup">
+                <h2>Rejoignez-nous 🐾</h2>
+                <p>Créez votre compte gratuit et participez à la protection animale.</p>
+
+                <form th:action="@{/auth/signup}" method="post" onsubmit="return signup(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Prénom</label>
+                            <input type="text" name="firstName" placeholder="Marie" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Nom</label>
+                            <input type="text" name="lastName" placeholder="Dupont" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Adresse e-mail</label>
+                        <input type="email" name="email" placeholder="vous@exemple.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Mot de passe</label>
+                        <input type="password" name="password" placeholder="Au moins 8 caractères" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Ville</label>
+                        <input type="text" name="city" placeholder="Casablanca">
+                    </div>
+                    <div class="form-group">
+                        <label>Votre rôle</label>
+                        <select name="role">
+                            <option value="USER">Adoptant potentiel</option>
+                            <option value="ASSOCIATION">Bénévole / Association</option>
+                            <option value="VETERINAIRE">Vétérinaire</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary form-submit">Créer mon compte →</button>
+                </form>
+
+                <!-- ❌ SUPPRIMÉ : bouton Google -->
+            </div>
+        </div>
+    </div>
+
+    <!-- REPORT LOST ANIMAL MODAL -->
+    <div class="modal-overlay" id="reportModal">
+        <div class="report-modal">
+            <button class="modal-close" onclick="document.getElementById('reportModal').classList.remove('active')">✕</button>
+            <h2>Signaler un animal perdu</h2>
+            <p>Remplissez le formulaire ci-dessous pour aider à retrouver cet animal.</p>
+
+            <form th:action="@{/perdus/report}" method="post" enctype="multipart/form-data" onsubmit="return reportLost(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Espèce</label>
+                        <select name="animalType" required>
+                            <option value="Chien">Chien</option>
+                            <option value="Chat">Chat</option>
+                            <option value="Lapin">Lapin</option>
+                            <option value="Oiseau">Oiseau</option>
+                            <option value="Autre">Autre</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Race</label>
+                        <input type="text" name="breed" placeholder="Berger Allemand...">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nom (si connu)</label>
+                        <input type="text" name="name" placeholder="Luna">
+                    </div>
+                    <div class="form-group">
+                        <label>Couleur</label>
+                        <input type="text" name="color" placeholder="Roux, tache blanche...">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Date de disparition</label>
+                        <input type="date" name="lastSeenDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Zone / Quartier</label>
+                        <input type="text" name="lastSeenLocation" placeholder="Anfa, Casablanca..." required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Description / Signes distinctifs</label>
+                    <textarea name="distinctFeatures" rows="3" placeholder="Toute information utile..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Photo (optionnel)</label>
+                    <input type="file" name="images" accept="image/*">
+                </div>
+                <div class="form-group">
+                    <label>Votre téléphone</label>
+                    <input type="tel" name="ownerPhone" placeholder="+212 6XX XXX XXX" required>
+                </div>
+                <button type="submit" class="btn btn-terracotta form-submit">Publier le signalement →</button>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'PawCare - ' + ${post.title}">PawCare - Détails adoption</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/pawcare-style.css}">
+    <style>
+        .detail-container {
+            max-width: 1200px;
+            margin: 120px auto 60px;
+            padding: 0 30px;
+        }
+        .detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+        .detail-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: var(--dark);
+        }
+        .detail-badge {
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            background: var(--terracotta);
+            color: white;
+        }
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            margin-bottom: 60px;
+        }
+        .detail-gallery {
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+        .main-image {
+            width: 100%;
+            height: 400px;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-color: var(--cream);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8rem;
+        }
+        .additional-images-section {
+            padding: 15px;
+            background: var(--cream-light);
+            border-top: 1px solid var(--border);
+        }
+        .additional-images-section h4 {
+            font-size: 0.9rem;
+            color: var(--forest);
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        .additional-images {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+        }
+        .additional-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            object-fit: cover;
+            cursor: pointer;
+            transition: transform 0.2s;
+            border: 2px solid transparent;
+            flex-shrink: 0;
+        }
+        .additional-image:hover {
+            transform: scale(1.05);
+            border-color: var(--terracotta);
+        }
+        .detail-info {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: var(--shadow);
+        }
+        .info-section {
+            margin-bottom: 30px;
+        }
+        .info-section h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            color: var(--forest);
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--sand);
+            padding-bottom: 10px;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+        .info-label {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+        .info-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        .health-tag {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 50px;
+            background: rgba(45,74,62,0.1);
+            color: var(--forest);
+            margin-right: 10px;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 40px;
+        }
+        .action-buttons .btn {
+            flex: 1;
+            padding: 16px;
+        }
+        .owner-card {
+            background: var(--cream);
+            border-radius: 20px;
+            padding: 25px;
+            margin-top: 30px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .owner-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: var(--forest);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-family: 'Playfair Display', serif;
+        }
+        .similar-posts {
+            margin-top: 60px;
+        }
+        .similar-posts h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            color: var(--dark);
+            margin-bottom: 30px;
+        }
+        .similar-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--forest);
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 20px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-size: 1rem;
+        }
+        .back-button:hover {
+            color: var(--terracotta);
+        }
+        .no-image-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            background: var(--cream);
+            width: 100%;
+            height: 100%;
+        }
+        @media (max-width: 768px) {
+            .detail-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            .similar-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            .detail-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+        }
+    </style>
+
+    <!-- ✅ Variables d'authentification avec window -->
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        window.isAuthenticated = /*[[${session.user != null}]]*/ false;
+        window.currentUserId = /*[[${session.user != null ? session.user.id : null}]]*/ null;
+        window.postId = /*[[${post.id}]]*/ null;
+        /*]]>*/
+    </script>
+</head>
+
+<body>
+<div th:replace="~{pawcare/fragments/navbar :: navbar}"></div>
+
+<div class="detail-container">
+    <!-- ✅ RETOUR AUX ANNONCES - CORRIGÉ : lien direct vers la page d'accueil -->
+    <a href="/#adoption" class="back-button">← Retour aux annonces</a>
+
+    <div class="detail-header">
+        <h1 class="detail-title" th:text="${post.title}">Max cherche une famille</h1>
+        <span class="detail-badge" th:text="${post.status}">Disponible</span>
+    </div>
+
+    <div class="detail-grid">
+        <div class="detail-gallery">
+            <!-- ✅ AFFICHAGE DE L'IMAGE PRINCIPALE -->
+            <div th:if="${post.imageUrl != null and post.imageUrl != ''}">
+                <div class="main-image" th:style="'background-image: url(' + @{${post.imageUrl}} + '); background-size: cover; background-position: center;'">
+                </div>
+            </div>
+            <!-- Fallback si pas d'image -->
+            <div th:unless="${post.imageUrl != null and post.imageUrl != ''}">
+                <div class="main-image no-image-placeholder">
+                    <span th:text="${post.animalType == 'Chien' ? '🐕' :
+                                    post.animalType == 'Chat' ? '🐈' :
+                                    post.animalType == 'Lapin' ? '🐇' :
+                                    post.animalType == 'Oiseau' ? '🦜' : '🐾'}">🐕</span>
+                </div>
+            </div>
+
+            <!-- ✅ AFFICHAGE DES IMAGES SUPPLÉMENTAIRES -->
+            <div th:if="${post.additionalImages != null and !post.additionalImages.isEmpty()}">
+                <div class="additional-images-section">
+                    <h4>📸 Autres photos (<span th:text="${post.additionalImages.size()}"></span>)</h4>
+                    <div class="additional-images">
+                        <img th:each="img : ${post.additionalImages}"
+                             th:src="@{${img}}"
+                             class="additional-image"
+                             alt="Photo supplémentaire"
+                             onclick="changeMainImage(this.src)">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="detail-info">
+            <div class="info-section">
+                <h3>À propos de <span th:text="${post.title}">Max</span></h3>
+                <p class="info-value" th:text="${post.description}">Description détaillée...</p>
+            </div>
+
+            <div class="info-section">
+                <h3>Caractéristiques</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Espèce</span>
+                        <span class="info-value" th:text="${post.animalType}">Chien</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Race</span>
+                        <span class="info-value" th:text="${post.breed} ?: 'Non spécifiée'">Labrador</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Âge</span>
+                        <span class="info-value" th:text="${post.age} + ' ans'">2 ans</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Sexe</span>
+                        <span class="info-value" th:text="${post.gender} ?: 'Non spécifié'">Mâle</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Taille</span>
+                        <span class="info-value" th:text="${post.size} ?: 'Non spécifiée'">Grand</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Couleur</span>
+                        <span class="info-value" th:text="${post.color} ?: 'Non spécifiée'">Fauve</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Localisation</span>
+                        <span class="info-value" th:text="${post.location}">Casablanca</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-section">
+                <h3>Santé & Soins</h3>
+                <div>
+                    <span class="health-tag" th:if="${post.vaccinated}">✅ Vacciné</span>
+                    <span class="health-tag" th:if="${post.sterilized}">✅ Stérilisé</span>
+                    <span class="health-tag" th:if="${post.dewormed}">✅ Vermifugé</span>
+                    <span th:unless="${post.vaccinated or post.sterilized or post.dewormed}" style="color: var(--text-light);">Aucune information</span>
+                </div>
+                <p class="info-value" style="margin-top:15px;" th:text="${post.healthStatus} ?: 'Non spécifié'">En excellente santé</p>
+            </div>
+
+            <div class="info-section">
+                <h3>Personnalité</h3>
+                <p class="info-value" th:text="${post.personality} ?: 'Non spécifiée'">Joueur, affectueux, bon avec les enfants</p>
+            </div>
+
+            <!-- ✅ ACTIONS -->
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="openAdoptionRequest()">
+                    🐾 Demander l'adoption
+                </button>
+                <!-- ✅ BOUTONS MODIFIER/SUPPRIMER - UNIQUEMENT POUR LE PROPRIÉTAIRE -->
+                <div th:if="${session.user != null and session.user.id == post.user.id}" style="display: flex; gap: 10px; width: 100%;">
+                    <a th:href="'/adoption/' + ${post.id} + '/edit'" class="btn btn-outline" style="flex:1; text-align:center; padding:16px;">
+                        ✏️ Modifier
+                    </a>
+                    <button class="btn btn-outline" style="flex:1; padding:16px; border-color: var(--terracotta); color: var(--terracotta);" onclick="deleteAdoption()">
+                        🗑️ Supprimer
+                    </button>
+                </div>
+            </div>
+
+            <div class="owner-card">
+                <div class="owner-avatar" th:text="${#strings.substring(post.user.firstName, 0, 1)}">M</div>
+                <div class="owner-info">
+                    <h4 th:text="${post.user.firstName} + ' ' + ${post.user.lastName}">Marie Dupont</h4>
+                    <p>Membre depuis <span th:text="${#temporals.format(post.user.createdAt, 'MMMM yyyy')}">janvier 2025</span></p>
+                    <button class="btn btn-outline" style="padding:8px 15px; font-size:0.8rem;" onclick="contactOwner()">📧 Contacter</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="similar-posts" th:if="${similarPosts != null and !similarPosts.isEmpty()}">
+        <h3>Vous aimerez peut-être aussi</h3>
+        <div class="similar-grid">
+            <div class="adopt-card" th:each="similar : ${similarPosts}" th:onclick="'window.location.href=\'/adoption/' + ${similar.id} + '\''">
+                <div class="adopt-img" th:classappend="'bg' + (${similar.id % 4 + 1})"
+                     th:if="${similar.imageUrl == null or similar.imageUrl == ''}">
+                    <span th:text="${similar.animalType == 'Chien' ? '🐕' :
+                                    similar.animalType == 'Chat' ? '🐈' : '🐾'}">🐕</span>
+                </div>
+                <div class="adopt-img" th:classappend="'bg' + (${similar.id % 4 + 1})"
+                     th:if="${similar.imageUrl != null and similar.imageUrl != ''}"
+                     th:style="'background-image: url(' + @{${similar.imageUrl}} + '); background-size: cover; background-position: center;'">
+                </div>
+                <div class="adopt-body">
+                    <div class="adopt-name" th:text="${similar.title}">Max</div>
+                    <div class="adopt-details">
+                        <div class="adopt-detail" th:text="${similar.animalType} + ' • ' + ${similar.age} + ' ans'">Chien • 2 ans</div>
+                        <div class="adopt-detail" th:text="'📍 ' + ${similar.location}">📍 Casablanca</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{pawcare/fragments/footer :: footer}"></div>
+<div th:replace="~{pawcare/fragments/toast :: toast}"></div>
+
+<script th:src="@{/js/pawcare-main.js}"></script>
+<script>
+    // ✅ VARIABLES
+    var isAuthenticated = window.isAuthenticated || false;
+    var currentUserId = window.currentUserId || null;
+    var postId = window.postId || null;
+
+    // ============================================
+    // DEMANDER L'ADOPTION
+    // ============================================
+    function openAdoptionRequest() {
+        if (!window.isAuthenticated) {
+            openModal('login');
+            return;
+        }
+        // ✅ Redirige vers le formulaire de demande
+        window.location.href = '/adoption/' + postId + '/request-form';
+    }
+
+    // ============================================
+    // CONTACTER LE PROPRIÉTAIRE
+    // ============================================
+    function contactOwner() {
+        if (!window.isAuthenticated) {
+            openModal('login');
+            return;
+        }
+        showToast('📧 La messagerie sera bientôt disponible');
+    }
+
+    // ============================================
+    // CHANGER L'IMAGE PRINCIPALE
+    // ============================================
+    function changeMainImage(imageUrl) {
+        const mainImageDiv = document.querySelector('.main-image');
+        if (mainImageDiv) {
+            mainImageDiv.style.backgroundImage = 'url(' + imageUrl + ')';
+            mainImageDiv.style.backgroundSize = 'cover';
+            mainImageDiv.style.backgroundPosition = 'center';
+            mainImageDiv.innerHTML = '';
+        }
+    }
+
+    // ============================================
+    // SUPPRIMER L'ANNONCE
+    // ============================================
+    function deleteAdoption() {
+        if (!window.isAuthenticated) {
+            openModal('login');
+            return;
+        }
+
+        if (!confirm('Êtes-vous sûr de vouloir supprimer cette annonce ? Cette action est irréversible.')) {
+            return;
+        }
+
+        showToast('📤 Suppression en cours...');
+
+        fetch('/adoption/' + postId + '/delete', {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('HTTP ' + response.status);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                showToast('✅ Annonce supprimée avec succès');
+                setTimeout(() => {
+                    window.location.href = '/#adoption';
+                }, 1000);
+            } else {
+                showToast('❌ ' + (data.message || 'Erreur lors de la suppression'));
+            }
+        })
+        .catch(error => {
+            console.error('❌ Erreur:', error);
+            showToast('❌ Erreur lors de la suppression');
+        });
+    }
+
+    // ✅ Vérification au chargement
+    console.log('✅ adoption-details.html chargé');
+    console.log('📌 postId:', postId);
+    console.log('📌 isAuthenticated:', isAuthenticated);
+</script>
+</body>
+</html>

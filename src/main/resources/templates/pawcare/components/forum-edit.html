@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modifier le sujet - PawCare</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/pawcare-style.css}">
+    <style>
+        .form-container {
+            max-width: 800px;
+            margin: 120px auto 60px;
+            padding: 0 30px;
+        }
+        .form-card {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: var(--shadow);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--forest);
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 1rem;
+        }
+        .form-group textarea {
+            min-height: 200px;
+            resize: vertical;
+        }
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        .btn-primary {
+            background: var(--terracotta);
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            flex: 2;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--terracotta);
+            color: var(--terracotta);
+            padding: 14px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            flex: 1;
+            text-align: center;
+            text-decoration: none;
+        }
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--forest);
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        .char-counter {
+            text-align: right;
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin-top: 5px;
+        }
+        .current-category {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin-top: 5px;
+        }
+    </style>
+</head>
+
+<body>
+<div th:replace="~{pawcare/fragments/navbar :: navbar}"></div>
+
+<div class="form-container">
+    <a th:href="@{/forum/post/{id}(id=${post.id})}" class="back-button">← Retour au sujet</a>
+
+    <div class="form-card">
+        <h1 style="font-family: 'Playfair Display', serif; font-size: 2rem; margin-bottom: 30px;">✏️ Modifier le sujet</h1>
+
+        <form th:action="@{/forum/post/{id}/modifier(id=${post.id})}" method="post">
+            <div class="form-group">
+                <label>Titre du sujet *</label>
+                <input type="text" name="title" id="postTitle" th:value="${post.title}" required>
+            </div>
+
+            <div class="form-group">
+                <label>Catégorie *</label>
+                <select name="categoryId" id="postCategory" required>
+                    <option th:each="cat : ${categories}"
+                            th:value="${cat.id}"
+                            th:selected="${post.category.id == cat.id}"
+                            th:text="${cat.icon + ' ' + cat.name}">
+                    </option>
+                </select>
+                <div class="current-category" th:text="'Catégorie actuelle : ' + ${post.category.icon} + ' ' + ${post.category.name}">
+                    Catégorie actuelle
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Contenu *</label>
+                <textarea name="content" id="postContent" required th:text="${post.content}"></textarea>
+                <div class="char-counter">
+                    <span id="charCount" th:text="${#strings.length(post.content)}">0</span> / 5000 caractères
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-primary">💾 Enregistrer les modifications</button>
+                <a th:href="@{/forum/post/{id}(id=${post.id})}" class="btn-outline">Annuler</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div th:replace="~{pawcare/fragments/footer :: footer}"></div>
+<div th:replace="~{pawcare/fragments/toast :: toast}"></div>
+
+<script th:src="@{/js/pawcare-main.js}"></script>
+<script>
+    // Compteur de caractères
+    const contentArea = document.getElementById('postContent');
+    const charCount = document.getElementById('charCount');
+
+    if (contentArea && charCount) {
+        // Mettre à jour le compteur initial
+        charCount.textContent = contentArea.value.length;
+
+        contentArea.addEventListener('input', function() {
+            charCount.textContent = this.value.length;
+            if (this.value.length > 5000) {
+                charCount.style.color = 'var(--terracotta)';
+            } else {
+                charCount.style.color = '';
+            }
+        });
+    }
+
+    // Validation du formulaire
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const title = document.getElementById('postTitle').value.trim();
+        const content = document.getElementById('postContent').value.trim();
+        const category = document.getElementById('postCategory').value;
+
+        if (!title || title.length < 5) {
+            e.preventDefault();
+            showToast('Le titre doit contenir au moins 5 caractères');
+            return false;
+        }
+
+        if (!content || content.length < 10) {
+            e.preventDefault();
+            showToast('Le contenu doit contenir au moins 10 caractères');
+            return false;
+        }
+
+        if (!category) {
+            e.preventDefault();
+            showToast('Veuillez sélectionner une catégorie');
+            return false;
+        }
+
+        showToast('Enregistrement en cours...');
+    });
+</script>
+</body>
+</html>

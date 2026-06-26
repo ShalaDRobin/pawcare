@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Créer un sujet - PawCare</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/pawcare-style.css}">
+    <style>
+        .form-container {
+            max-width: 800px;
+            margin: 120px auto 60px;
+            padding: 0 30px;
+        }
+        .form-card {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: var(--shadow);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--forest);
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 1rem;
+        }
+        .form-group textarea {
+            min-height: 200px;
+            resize: vertical;
+        }
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        .btn-primary {
+            background: var(--terracotta);
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            flex: 2;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--terracotta);
+            color: var(--terracotta);
+            padding: 14px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            flex: 1;
+            text-align: center;
+            text-decoration: none;
+        }
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--forest);
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        .char-counter {
+            text-align: right;
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin-top: 5px;
+        }
+    </style>
+</head>
+
+<body>
+<div th:replace="~{pawcare/fragments/navbar :: navbar}"></div>
+
+<div class="form-container">
+    <a href="/" class="back-button">← Retour à l'accueil</a>
+
+    <div class="form-card">
+        <h1 style="font-family: 'Playfair Display', serif; font-size: 2rem; margin-bottom: 30px;">✍️ Créer un nouveau sujet</h1>
+
+        <form id="createPostForm" action="/forum/creer" method="post">
+            <div class="form-group">
+                <label>Titre du sujet *</label>
+                <input type="text" name="title" id="postTitle" placeholder="Ex: Mon chien refuse de manger..." required>
+            </div>
+
+            <div class="form-group">
+                <label>Catégorie *</label>
+                <select name="categoryId" id="postCategory" required>
+                    <option value="">Sélectionnez une catégorie</option>
+                    <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.icon + ' ' + cat.name}"></option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Contenu *</label>
+                <textarea name="content" id="postContent" placeholder="Décrivez votre question ou partagez votre expérience..." required></textarea>
+                <div class="char-counter">
+                    <span id="charCount">0</span> / 5000 caractères
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-primary">📤 Publier le sujet</button>
+                <a href="/" class="btn-outline">Annuler</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div th:replace="~{pawcare/fragments/footer :: footer}"></div>
+<div th:replace="~{pawcare/fragments/toast :: toast}"></div>
+
+<script th:src="@{/js/pawcare-main.js}"></script>
+<script>
+    console.log('🔴🔴🔴 forum-create.html CHARGÉ ! 🔴🔴🔴');
+
+    // Compteur de caractères
+    const contentArea = document.getElementById('postContent');
+    const charCount = document.getElementById('charCount');
+
+    if (contentArea && charCount) {
+        contentArea.addEventListener('input', function() {
+            charCount.textContent = this.value.length;
+        });
+    }
+
+    // ✅ VALIDATION SANS BLOQUER LA SOUMISSION
+    document.getElementById('createPostForm').addEventListener('submit', function(e) {
+        const title = document.getElementById('postTitle').value.trim();
+        const category = document.getElementById('postCategory').value;
+        const content = document.getElementById('postContent').value.trim();
+
+        console.log('🔴🔴🔴 VALEURS DU FORMULAIRE :');
+        console.log('📝 Titre:', title);
+        console.log('📂 Catégorie:', category);
+        console.log('📄 Contenu (longueur):', content.length);
+
+        if (!title) {
+            e.preventDefault();
+            showToast('⚠️ Veuillez entrer un titre');
+            return;
+        }
+        if (!category) {
+            e.preventDefault();
+            showToast('⚠️ Veuillez sélectionner une catégorie');
+            return;
+        }
+        if (!content) {
+            e.preventDefault();
+            showToast('⚠️ Veuillez entrer un contenu');
+            return;
+        }
+
+        console.log('✅ FORMULAIRE VALIDE - Envoi en cours...');
+        showToast('📤 Publication en cours...');
+        // Le formulaire se soumet normalement
+    });
+</script>
+</body>
+</html>
