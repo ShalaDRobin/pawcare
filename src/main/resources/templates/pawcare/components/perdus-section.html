@@ -143,14 +143,11 @@
             </div>
         </div>
 
-        <!-- Bouton Voir plus (visible seulement s'il y a des signalements) -->
-        <div th:if="${recentLost != null and !recentLost.isEmpty()}" style="text-align: center; margin-top: 40px;">
-            <button class="btn btn-outline btn-lg" onclick="window.location.href='/perdus'">Voir tous les signalements →</button>
-        </div>
+        <!-- ❌ BOUTON "VOIR TOUS LES SIGNALEMENTS" SUPPRIMÉ -->
     </section>
 </div>
 
-<!-- ✅ Fonction JavaScript pour vérifier l'authentification - CORRIGÉE -->
+<!-- ✅ Fonction JavaScript pour vérifier l'authentification -->
 <script>
     function openReportModal() {
         // Vérifier si l'utilisateur est connecté
