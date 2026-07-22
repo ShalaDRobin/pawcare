@@ -6,51 +6,117 @@
 <div th:fragment="navbar">
     <nav id="navbar">
         <!-- Logo -->
-        <a class="nav-logo" th:onclick="'scrollToSection(\'home\')'" style="cursor:pointer">
+        <a class="nav-logo" th:onclick="'scrollToSection(\\'home\\')'" style="cursor:pointer; text-decoration:none;">
             <span class="paw-icon">🐾</span> Paw<span>Care</span>
         </a>
 
-        <!-- Navigation Tabs -->
+        <!-- Navigation Tabs (desktop) -->
         <ul class="nav-tabs">
-            <li><button class="nav-tab-link active" id="tab-home" th:onclick="'scrollToSection(\'home\')'">
+            <li><button class="nav-tab-link active" id="tab-home" th:onclick="'scrollToSection(\\'home\\')'">
                 <span class="tab-icon">🏡</span> Accueil
             </button></li>
-            <li><button class="nav-tab-link" id="tab-adoption" th:onclick="'scrollToSection(\'adoption\')'">
+            <li><button class="nav-tab-link" id="tab-adoption" th:onclick="'scrollToSection(\\'adoption\\')'">
                 <span class="tab-icon">🐾</span> Adoption
             </button></li>
-            <li><button class="nav-tab-link" id="tab-perdus" th:onclick="'scrollToSection(\'perdus\')'">
+            <li><button class="nav-tab-link" id="tab-perdus" th:onclick="'scrollToSection(\\'perdus\\')'">
                 <span class="tab-icon">🔍</span> Animaux perdus
             </button></li>
-            <li><button class="nav-tab-link" id="tab-sensibilisation" th:onclick="'scrollToSection(\'sensibilisation\')'">
+            <li><button class="nav-tab-link" id="tab-sensibilisation" th:onclick="'scrollToSection(\\'sensibilisation\\')'">
                 <span class="tab-icon">💚</span> Sensibilisation
             </button></li>
-            <li><button class="nav-tab-link" id="tab-forum" th:onclick="'scrollToSection(\'forum\')'">
+            <li><button class="nav-tab-link" id="tab-forum" th:onclick="'scrollToSection(\\'forum\\')'">
                 <span class="tab-icon">💬</span> Forum
             </button></li>
         </ul>
 
-        <!-- Actions (Connexion / Inscription) -->
+        <!-- Actions desktop (non connecté) -->
         <div class="nav-actions" sec:authorize="!isAuthenticated()">
-            <button class="btn btn-outline" th:onclick="'openModal(\'login\')'">Connexion</button>
-            <button class="btn btn-primary" th:onclick="'openModal(\'signup\')'">S'inscrire</button>
+            <button class="btn btn-outline" th:onclick="'openModal(\\'login\\')'">Connexion</button>
+            <button class="btn btn-primary" th:onclick="'openModal(\\'signup\\')'">S'inscrire</button>
         </div>
 
-        <!-- ✅ MENU UTILISATEUR - UNIQUEMENT DÉCONNEXION -->
+        <!-- Actions desktop (connecté) -->
         <div class="nav-actions" sec:authorize="isAuthenticated()">
-            <span class="notification-badge" th:onclick="'window.location.href=\'/notifications\''">
+            <span class="notification-badge" th:onclick="'window.location.href=\\'/notifications\\''">
                 🔔 <span class="badge" th:text="${session.unreadCount ?: 0}">0</span>
             </span>
-            <div class="profile-menu">
+            <div class="profile-menu" onclick="this.classList.toggle('active')">
                 <span class="user-name" th:text="${session.user.firstName} + ' ' + ${session.user.lastName}"></span>
                 <div class="dropdown">
-                    <!-- ✅ SEULEMENT DÉCONNEXION -->
                     <a th:href="@{/auth/logout}">
                         <span class="dropdown-icon">🔒</span> Déconnexion
                     </a>
                 </div>
             </div>
         </div>
+
+        <!-- ✅ Bouton Hamburger (mobile uniquement) -->
+        <button class="hamburger" id="hamburgerBtn" onclick="toggleMobileMenu()" aria-label="Menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
     </nav>
+
+    <!-- ✅ Menu mobile drawer -->
+    <div class="mobile-menu" id="mobileMenu">
+        <button class="mobile-menu-item" onclick="closeMobileMenu(); scrollToSection('home')">
+            <span class="tab-icon">🏡</span> Accueil
+        </button>
+        <button class="mobile-menu-item" onclick="closeMobileMenu(); scrollToSection('adoption')">
+            <span class="tab-icon">🐾</span> Adoption
+        </button>
+        <button class="mobile-menu-item" onclick="closeMobileMenu(); scrollToSection('perdus')">
+            <span class="tab-icon">🔍</span> Animaux perdus
+        </button>
+        <button class="mobile-menu-item" onclick="closeMobileMenu(); scrollToSection('sensibilisation')">
+            <span class="tab-icon">💚</span> Sensibilisation
+        </button>
+        <button class="mobile-menu-item" onclick="closeMobileMenu(); scrollToSection('forum')">
+            <span class="tab-icon">💬</span> Forum
+        </button>
+
+        <div class="mobile-menu-divider"></div>
+
+        <!-- Non connecté -->
+        <div sec:authorize="!isAuthenticated()" class="mobile-menu-actions">
+            <button class="btn btn-outline" onclick="closeMobileMenu(); openModal('login')">Connexion</button>
+            <button class="btn btn-primary" onclick="closeMobileMenu(); openModal('signup')">S'inscrire</button>
+        </div>
+
+        <!-- Connecté -->
+        <div sec:authorize="isAuthenticated()">
+            <button class="mobile-menu-item" onclick="window.location.href='/notifications'">
+                🔔 Notifications
+            </button>
+            <button class="mobile-menu-item" style="color: var(--terracotta);" th:onclick="'window.location.href=\\'/auth/logout\\''">
+                🔒 Déconnexion
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            const btn = document.getElementById('hamburgerBtn');
+            menu.classList.toggle('open');
+            btn.classList.toggle('open');
+        }
+        function closeMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            const btn = document.getElementById('hamburgerBtn');
+            menu.classList.remove('open');
+            btn.classList.remove('open');
+        }
+        // Fermer le menu si on clique en dehors
+        document.addEventListener('click', function(e) {
+            const menu = document.getElementById('mobileMenu');
+            const btn = document.getElementById('hamburgerBtn');
+            if (menu && btn && !menu.contains(e.target) && !btn.contains(e.target)) {
+                closeMobileMenu();
+            }
+        });
+    </script>
 </div>
 </body>
 </html>
