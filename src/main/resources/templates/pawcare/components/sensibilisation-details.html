@@ -34,6 +34,7 @@
             font-size: 2.8rem;
             color: var(--dark);
             margin-bottom: 15px;
+            line-height: 1.2;
         }
         .article-meta {
             display: flex;
@@ -55,12 +56,10 @@
         .article-content {
             font-size: 1.1rem;
             line-height: 1.8;
-            color: var(--text-color);
+            color: var(--text);
             white-space: pre-wrap;
         }
-        .article-content p {
-            margin-bottom: 20px;
-        }
+        .article-content p { margin-bottom: 20px; }
         .article-actions {
             display: flex;
             gap: 15px;
@@ -68,6 +67,7 @@
             padding-top: 20px;
             border-top: 1px solid var(--border);
             flex-wrap: wrap;
+            align-items: center;
         }
         .btn-like {
             background: transparent;
@@ -77,15 +77,15 @@
             border-radius: 50px;
             font-weight: 600;
             cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            transition: all 0.2s;
         }
-        .btn-like:hover {
-            background: var(--terracotta);
-            color: white;
-        }
+        .btn-like:hover { background: var(--terracotta); color: white; }
         .owner-actions {
             display: flex;
             gap: 10px;
             margin-left: auto;
+            flex-wrap: wrap;
         }
         .back-button {
             display: inline-flex;
@@ -96,10 +96,12 @@
             font-weight: 600;
             margin-bottom: 20px;
             cursor: pointer;
+            background: none;
+            border: none;
+            font-size: 1rem;
         }
-        .related-articles {
-            margin-top: 60px;
-        }
+        .back-button:hover { color: var(--terracotta); }
+        .related-articles { margin-top: 60px; }
         .related-articles h3 {
             font-family: 'Playfair Display', serif;
             font-size: 1.8rem;
@@ -119,16 +121,46 @@
             cursor: pointer;
             transition: transform 0.2s;
         }
-        .related-card:hover {
-            transform: translateY(-3px);
-        }
-        .related-card h4 {
-            color: var(--forest);
-            margin-bottom: 5px;
-        }
-        .related-card p {
-            color: var(--text-light);
-            font-size: 0.9rem;
+        .related-card:hover { transform: translateY(-3px); }
+        .related-card h4 { color: var(--forest); margin-bottom: 5px; }
+        .related-card p { color: var(--text-light); font-size: 0.9rem; }
+
+        /* ✅ RESPONSIVE MOBILE */
+        @media (max-width: 768px) {
+            .article-container {
+                margin: 80px auto 40px;
+                padding: 0 16px;
+            }
+            .article-card {
+                padding: 24px 18px;
+                border-radius: 16px;
+            }
+            .article-title { font-size: 1.7rem; }
+            .article-meta {
+                gap: 12px;
+                font-size: 0.82rem;
+            }
+            .article-image {
+                height: 220px;
+                border-radius: 12px;
+                margin: 14px 0 20px;
+            }
+            .article-content { font-size: 0.97rem; line-height: 1.75; }
+            .article-actions {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .btn-like { width: 100%; text-align: center; }
+            .owner-actions {
+                margin-left: 0;
+                width: 100%;
+                flex-direction: column;
+            }
+            .owner-actions .btn { width: 100%; text-align: center; }
+            .related-articles { margin-top: 36px; }
+            .related-articles h3 { font-size: 1.3rem; margin-bottom: 16px; }
+            .related-grid { grid-template-columns: 1fr; gap: 14px; }
         }
     </style>
 </head>
@@ -137,17 +169,12 @@
 <div th:replace="~{pawcare/fragments/navbar :: navbar}"></div>
 
 <div class="article-container">
-    <!-- ✅ RETOUR À L'ACCUEIL -->
-    <a href="/" class="back-button">← Retour à l'accueil</a>
+    <a href="/sensibilisation" class="back-button">← Retour aux articles</a>
 
     <div class="article-card">
-        <!-- Catégorie -->
         <span class="article-category" th:text="${article.category}">Soins</span>
-
-        <!-- Titre -->
         <h1 class="article-title" th:text="${article.title}">Titre de l'article</h1>
 
-        <!-- Meta -->
         <div class="article-meta">
             <span>✍️ <span th:text="${article.author}">Auteur</span></span>
             <span>📅 <span th:text="${#temporals.format(article.publishedAt, 'dd MMMM yyyy')}">Date</span></span>
@@ -158,29 +185,21 @@
             </span>
         </div>
 
-        <!-- Image -->
         <div th:if="${article.imageUrl != null and article.imageUrl != ''}">
             <img th:src="@{${article.imageUrl}}" alt="Image de l'article" class="article-image">
         </div>
 
-        <!-- Contenu -->
         <div class="article-content" th:text="${article.content}">Contenu de l'article...</div>
 
-        <!-- Actions -->
         <div class="article-actions">
             <button class="btn-like" onclick="likeArticle()">
                 ❤️ Like (<span id="likeCount" th:text="${article.likeCount}">0</span>)
             </button>
-
-            <!-- Actions propriétaire -->
             <div th:if="${isOwner}" class="owner-actions">
-                <button class="btn btn-primary" onclick="editArticle()" style="padding: 10px 20px;">
-                    ✏️ Modifier
-                </button>
-                <button class="btn btn-outline" onclick="deleteArticle()" style="padding: 10px 20px; border-color: var(--terracotta); color: var(--terracotta);">
-                    🗑️ Supprimer
-                </button>
-                <button class="btn btn-outline" onclick="togglePublish()" style="padding: 10px 20px;">
+                <button class="btn btn-primary" onclick="editArticle()" style="padding:10px 20px;">✏️ Modifier</button>
+                <button class="btn btn-outline" onclick="deleteArticle()"
+                        style="padding:10px 20px; border-color:var(--terracotta); color:var(--terracotta);">🗑️ Supprimer</button>
+                <button class="btn btn-outline" onclick="togglePublish()" style="padding:10px 20px;">
                     <span th:if="${article.isPublished}">📤 Dépublier</span>
                     <span th:unless="${article.isPublished}">📥 Publier</span>
                 </button>
@@ -188,14 +207,14 @@
         </div>
     </div>
 
-    <!-- Articles liés -->
     <div class="related-articles" th:if="${relatedArticles != null and !relatedArticles.isEmpty()}">
         <h3>📚 Vous aimerez aussi</h3>
         <div class="related-grid">
-            <div class="related-card" th:each="related : ${relatedArticles}" th:onclick="'window.location.href=\'/sensibilisation/' + ${related.id} + '\''">
+            <div class="related-card" th:each="related : ${relatedArticles}"
+                 th:onclick="'window.location.href=\'/sensibilisation/' + ${related.id} + '\''">
                 <h4 th:text="${related.title}">Titre</h4>
                 <p th:text="${#strings.abbreviate(related.content, 80)}">Résumé...</p>
-                <span style="font-size: 0.8rem; color: var(--text-light);">👁️ <span th:text="${related.readCount}">0</span></span>
+                <span style="font-size:0.8rem; color:var(--text-light);">👁️ <span th:text="${related.readCount}">0</span></span>
             </div>
         </div>
     </div>
@@ -203,67 +222,37 @@
 
 <div th:replace="~{pawcare/fragments/footer :: footer}"></div>
 <div th:replace="~{pawcare/fragments/toast :: toast}"></div>
-
 <script th:src="@{/js/pawcare-main.js}"></script>
-<script>
-    const articleId = [[${article.id}]];
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const articleId = /*[[${article.id}]]*/ null;
+    /*]]>*/
 
     function likeArticle() {
-        if (!window.isAuthenticated) {
-            openModal('login');
-            return;
-        }
-
-        fetch('/sensibilisation/' + articleId + '/like', {
-            method: 'POST',
-            credentials: 'include'
-        })
-        .then(response => response.json())
+        if (!window.isAuthenticated) { openModal('login'); return; }
+        fetch('/sensibilisation/' + articleId + '/like', { method: 'POST', credentials: 'include' })
+        .then(r => r.json())
         .then(data => {
-            if (data.success) {
-                showToast('❤️ Like ajouté !');
-                location.reload();
-            } else {
-                showToast('Erreur: ' + data.message);
-            }
+            if (data.success) { showToast('❤️ Like ajouté !'); location.reload(); }
+            else showToast('Erreur: ' + data.message);
         });
     }
-
-    function editArticle() {
-        window.location.href = '/sensibilisation/' + articleId + '/edit';
-    }
-
+    function editArticle() { window.location.href = '/sensibilisation/' + articleId + '/edit'; }
     function deleteArticle() {
-        if (!confirm('Êtes-vous sûr de vouloir supprimer cet article ?')) return;
-
-        fetch('/sensibilisation/' + articleId + '/delete', {
-            method: 'POST',
-            credentials: 'include'
-        })
-        .then(response => response.json())
+        if (!confirm('Supprimer cet article ?')) return;
+        fetch('/sensibilisation/' + articleId + '/delete', { method: 'POST', credentials: 'include' })
+        .then(r => r.json())
         .then(data => {
-            if (data.success) {
-                showToast('✅ Article supprimé !');
-                setTimeout(() => window.location.href = '/', 1500);
-            } else {
-                showToast('Erreur: ' + data.message);
-            }
+            if (data.success) { showToast('✅ Article supprimé !'); setTimeout(() => window.location.href = '/sensibilisation', 1500); }
+            else showToast('Erreur: ' + data.message);
         });
     }
-
     function togglePublish() {
-        fetch('/sensibilisation/' + articleId + '/toggle-publish', {
-            method: 'POST',
-            credentials: 'include'
-        })
-        .then(response => response.json())
+        fetch('/sensibilisation/' + articleId + '/toggle-publish', { method: 'POST', credentials: 'include' })
+        .then(r => r.json())
         .then(data => {
-            if (data.success) {
-                showToast('✅ Statut modifié !');
-                location.reload();
-            } else {
-                showToast('Erreur: ' + data.message);
-            }
+            if (data.success) { showToast('✅ Statut modifié !'); location.reload(); }
+            else showToast('Erreur: ' + data.message);
         });
     }
 </script>
