@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<html xmlns:th="http://www.thymeleaf.org">
 
 <body>
 <div th:fragment="footer">
     <footer>
         <div class="footer-grid">
             <div class="footer-brand">
-                <a class="nav-logo" style="color:white; margin-bottom:16px; display:inline-flex; text-decoration:none">
+                <a class="nav-logo" href="/" style="color:white; margin-bottom:16px; display:inline-flex; text-decoration:none;">
                     🐾 Paw<span>Care</span>
                 </a>
                 <p>Une plateforme dédiée à la protection animale, l'adoption responsable et la sensibilisation communautaire.</p>
@@ -14,43 +14,36 @@
             <div class="footer-col">
                 <h4>Adopter</h4>
                 <ul>
-                    <li><a th:onclick="'scrollToSection(\'adoption\')'">Animaux disponibles</a></li>
-                    <li><a th:onclick="'showToast(\'Bientôt disponible\')'">Processus d'adoption</a></li>
-                    <li><a th:onclick="'showToast(\'Bientôt disponible\')'">Nos partenaires</a></li>
-                    <li><a th:onclick="'showToast(\'Bientôt disponible\')'">Familles d'accueil</a></li>
+                    <li><a href="/#adoption">Animaux disponibles</a></li>
+                    <li><a href="/#adoption">Processus d'adoption</a></li>
+                    <li><a href="/#adoption">Nos partenaires</a></li>
+                    <li><a href="/#adoption">Familles d'accueil</a></li>
                 </ul>
             </div>
             <div class="footer-col">
                 <h4>Aider</h4>
                 <ul>
-                    <li><a th:onclick="'scrollToSection(\'perdus\')'">Signaler un animal perdu</a></li>
-                    <li><a sec:authorize="!isAuthenticated()" th:onclick="'openModal(\'signup\')'">Devenir bénévole</a></li>
-                    <li sec:authorize="isAuthenticated()"><a th:href="@{/association/join}">Devenir bénévole</a></li>
-                    <li><a th:onclick="'showToast(\'Bientôt disponible\')'">Faire un don</a></li>
-                    <li><a th:onclick="'scrollToSection(\'forum\')'">Forum communauté</a></li>
+                    <li><a href="/#perdus">Signaler un animal perdu</a></li>
+                    <li><a href="/#forum">Devenir bénévole</a></li>
+                    <li><a href="/#forum">Faire un don</a></li>
+                    <li><a href="/#forum">Forum communauté</a></li>
                 </ul>
             </div>
             <div class="footer-col">
                 <h4>Légal</h4>
                 <ul>
-                    <li><a th:href="@{/legal/mentions}">Mentions légales</a></li>
-                    <li><a th:href="@{/legal/privacy}">Confidentialité</a></li>
-                    <li><a th:href="@{/legal/cgu}">CGU</a></li>
-                    <li><a th:href="@{/contact}">Contact</a></li>
+                    <li><a href="/">Mentions légales</a></li>
+                    <li><a href="/">Confidentialité</a></li>
+                    <li><a href="/">CGU</a></li>
+                    <li><a href="/">Contact</a></li>
                 </ul>
             </div>
         </div>
         <div class="footer-bottom">
-            <span th:text="'© ' + ${#dates.year(#dates.createNow())} + ' PawCare — Tous droits réservés'">© 2026 PawCare — Tous droits réservés</span>
+            <span>© 2026 PawCare — Tous droits réservés</span>
             <span>Fait avec ❤️ pour nos compagnons à quatre pattes</span>
         </div>
     </footer>
-
-    <!-- TOAST -->
-    <div class="toast" id="toast">
-        <span class="toast-icon">🐾</span>
-        <span id="toastMsg"></span>
-    </div>
 </div>
 </body>
 </html>

@@ -47,9 +47,7 @@
             margin-bottom: 2px;
             text-decoration: none;
         }
-        .forum-category-item:hover {
-            background: var(--cream);
-        }
+        .forum-category-item:hover { background: var(--cream); }
         .forum-category-item.active {
             background: rgba(196,107,63,0.1);
             color: var(--terracotta);
@@ -59,75 +57,38 @@
         .cat-name { font-weight: 600; font-size: 0.9rem; color: var(--dark); }
         .cat-count { font-size: 0.7rem; color: var(--text-light); }
         .cat-badge {
-            background: var(--terracotta);
-            color: white;
-            padding: 2px 8px;
-            border-radius: 50px;
-            font-size: 0.6rem;
-            font-weight: 600;
+            background: var(--terracotta); color: white;
+            padding: 2px 8px; border-radius: 50px;
+            font-size: 0.6rem; font-weight: 600;
         }
         .category-header {
-            background: white;
-            border-radius: 20px;
-            padding: 30px 35px;
-            box-shadow: var(--shadow);
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
+            background: white; border-radius: 20px;
+            padding: 30px 35px; box-shadow: var(--shadow);
+            margin-bottom: 20px; display: flex;
+            align-items: center; gap: 20px; flex-wrap: wrap;
         }
         .category-header .cat-icon-big { font-size: 3rem; }
         .category-header h1 {
             font-family: 'Playfair Display', serif;
-            font-size: 1.8rem;
-            color: var(--dark);
-            margin: 0 0 6px;
+            font-size: 1.8rem; color: var(--dark); margin: 0 0 6px;
         }
-        .category-header p {
-            color: var(--text-light);
-            font-size: 0.9rem;
-            margin: 0;
-        }
+        .category-header p { color: var(--text-light); font-size: 0.9rem; margin: 0; }
         .posts-toolbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
+            display: flex; justify-content: space-between;
+            align-items: center; margin-bottom: 15px;
         }
-        .posts-count {
-            color: var(--text-light);
-            font-size: 0.9rem;
-        }
+        .posts-count { color: var(--text-light); font-size: 0.9rem; }
         .post-card {
-            background: white;
-            border-radius: 20px;
-            padding: 25px;
-            box-shadow: var(--shadow);
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            margin-bottom: 15px;
+            background: white; border-radius: 20px; padding: 25px;
+            box-shadow: var(--shadow); cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s; margin-bottom: 15px;
         }
-        .post-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
-        }
-        .post-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 10px;
-        }
+        .post-card:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.08); }
+        .post-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
         .avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 1rem;
-            color: white;
-            flex-shrink: 0;
+            width: 40px; height: 40px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 1rem; color: white; flex-shrink: 0;
         }
         .av1 { background: #C46B3F; }
         .av2 { background: #2D4A3E; }
@@ -139,60 +100,92 @@
         .post-time { font-size: 0.75rem; color: var(--text-light); }
         .post-title { font-weight: 700; font-size: 1.1rem; color: var(--dark); margin-bottom: 8px; }
         .post-excerpt { font-size: 0.9rem; color: var(--text-light); line-height: 1.5; margin-bottom: 12px; }
-        .post-footer { display: flex; gap: 20px; font-size: 0.75rem; color: var(--text-light); }
+        .post-footer { display: flex; gap: 20px; font-size: 0.75rem; color: var(--text-light); flex-wrap: wrap; }
         .post-stat { display: flex; align-items: center; gap: 5px; }
         .post-category-tag {
-            display: inline-block;
-            padding: 1px 10px;
-            border-radius: 50px;
-            font-size: 0.65rem;
-            font-weight: 600;
-            background: rgba(196,107,63,0.1);
-            color: var(--terracotta);
+            display: inline-block; padding: 1px 10px; border-radius: 50px;
+            font-size: 0.65rem; font-weight: 600;
+            background: rgba(196,107,63,0.1); color: var(--terracotta);
         }
         .empty-posts {
-            text-align: center;
-            padding: 60px;
-            background: white;
-            border-radius: 20px;
-            box-shadow: var(--shadow);
-            color: var(--text-light);
+            text-align: center; padding: 60px; background: white;
+            border-radius: 20px; box-shadow: var(--shadow); color: var(--text-light);
         }
         .empty-posts h3 { color: var(--dark); font-family: 'Playfair Display', serif; margin: 15px 0 8px; }
-        .pagination {
-            display: flex;
-            gap: 8px;
-            justify-content: center;
-            margin-top: 20px;
-        }
+        .pagination { display: flex; gap: 8px; justify-content: center; margin-top: 20px; flex-wrap: wrap; }
         .pagination a {
-            padding: 8px 14px;
-            border-radius: 10px;
-            background: white;
-            box-shadow: var(--shadow);
-            font-size: 0.85rem;
-            text-decoration: none;
-            color: var(--dark);
-            transition: all 0.2s;
+            padding: 8px 14px; border-radius: 10px; background: white;
+            box-shadow: var(--shadow); font-size: 0.85rem;
+            text-decoration: none; color: var(--dark); transition: all 0.2s;
         }
-        .pagination a:hover, .pagination a.active {
-            background: var(--terracotta);
-            color: white;
-        }
+        .pagination a:hover, .pagination a.active { background: var(--terracotta); color: white; }
         .back-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            color: var(--text-light);
-            text-decoration: none;
-            font-size: 0.9rem;
-            margin-bottom: 10px;
-            transition: color 0.2s;
+            display: inline-flex; align-items: center; gap: 6px;
+            color: var(--text-light); text-decoration: none;
+            font-size: 0.9rem; margin-bottom: 10px; transition: color 0.2s;
         }
         .back-link:hover { color: var(--terracotta); }
+
+        /* ✅ RESPONSIVE MOBILE */
         @media (max-width: 768px) {
-            .forum-layout { grid-template-columns: 1fr; }
-            .forum-sidebar { position: relative; top: 0; }
+            .forum-category-container {
+                margin: 80px auto 40px;
+                padding: 0 16px;
+            }
+            .forum-layout {
+                grid-template-columns: 1fr;
+                gap: 16px;
+                margin-top: 16px;
+            }
+            .forum-sidebar {
+                position: relative;
+                top: 0;
+                padding: 18px;
+                border-radius: 16px;
+            }
+            /* Sidebar categories scrollable horizontalement sur mobile */
+            .forum-sidebar > div:nth-child(2) {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            .forum-category-item {
+                padding: 8px 12px;
+                border-radius: 50px;
+                background: var(--cream);
+                border: 1px solid var(--border);
+                flex-direction: row;
+                gap: 6px;
+            }
+            .forum-category-item.active {
+                background: rgba(196,107,63,0.15);
+                border-color: var(--terracotta);
+            }
+            .cat-count { display: none; }
+            /* Category header compact */
+            .category-header {
+                padding: 18px;
+                border-radius: 16px;
+                gap: 14px;
+            }
+            .category-header .cat-icon-big { font-size: 2rem; }
+            .category-header h1 { font-size: 1.3rem; }
+            .category-header > div[style*="margin-left:auto"] {
+                width: 100%;
+                margin-left: 0 !important;
+            }
+            .category-header > div[style*="margin-left:auto"] .btn {
+                width: 100%;
+            }
+            /* Post cards */
+            .post-card { padding: 16px; border-radius: 14px; }
+            .post-title { font-size: 0.95rem; }
+            .post-excerpt { font-size: 0.82rem; }
+            .post-footer { gap: 12px; }
+            /* Cacher le tag catégorie sur mobile (déjà dans la page) */
+            .post-category-tag { display: none; }
+            /* Empty state */
+            .empty-posts { padding: 36px 20px; }
         }
     </style>
 </head>
@@ -205,7 +198,7 @@
     <a href="/#forum" class="back-link">← Retour au forum</a>
 
     <div class="forum-layout">
-        <!-- ✅ Sidebar avec toutes les catégories -->
+        <!-- Sidebar catégories -->
         <div class="forum-sidebar">
             <div class="sidebar-title">📂 Catégories</div>
             <div th:each="cat : ${allCategories}">
@@ -221,23 +214,17 @@
                           th:text="${cat.postCount}">0</span>
                 </a>
             </div>
-
             <br>
             <button class="btn btn-terracotta" style="width:100%"
                     th:if="${session.user != null}"
-                    onclick="window.location.href='/forum/creer'">
-                ✍️ Nouveau post
-            </button>
+                    onclick="window.location.href='/forum/creer'">✍️ Nouveau post</button>
             <button class="btn btn-terracotta" style="width:100%"
                     th:unless="${session.user != null}"
-                    onclick="openModal('login')">
-                🔒 Connectez-vous pour poster
-            </button>
+                    onclick="openModal('login')">🔒 Connectez-vous pour poster</button>
         </div>
 
-        <!-- ✅ Posts filtrés par catégorie -->
+        <!-- Posts filtrés -->
         <div>
-            <!-- En-tête catégorie -->
             <div class="category-header">
                 <span class="cat-icon-big" th:text="${category.icon != null ? category.icon : '📁'}">📁</span>
                 <div>
@@ -247,30 +234,23 @@
                           th:text="${totalPosts} + ' discussion(s)'">0 discussions</span>
                 </div>
                 <div style="margin-left:auto;" th:if="${session.user != null}">
-                    <button class="btn btn-primary" onclick="window.location.href='/forum/creer'">
-                        ✍️ Nouveau post
-                    </button>
+                    <button class="btn btn-primary" onclick="window.location.href='/forum/creer'">✍️ Nouveau post</button>
                 </div>
             </div>
 
-            <!-- Toolbar -->
             <div class="posts-toolbar">
-                <span class="posts-count"
-                      th:text="${posts != null ? posts.size() + ' sujet(s) affiché(s)' : ''}"></span>
+                <span class="posts-count" th:text="${posts != null ? posts.size() + ' sujet(s) affiché(s)' : ''}"></span>
             </div>
 
-            <!-- Liste des posts -->
             <div th:if="${posts != null and !posts.isEmpty()}">
-                <div class="post-card"
-                     th:each="post : ${posts}"
+                <div class="post-card" th:each="post : ${posts}"
                      th:onclick="'window.location.href=\'/forum/post/' + ${post.id} + '\''">
                     <div class="post-header">
                         <div class="avatar" th:classappend="'av' + (${post.user.id % 5 + 1})"
                              th:text="${#strings.substring(post.user.firstName, 0, 1)}">A</div>
                         <div class="post-meta">
                             <div class="post-author"
-                                 th:text="${post.user.firstName} + ' ' + ${#strings.substring(post.user.lastName, 0, 1)} + '.'">
-                                Auteur</div>
+                                 th:text="${post.user.firstName} + ' ' + ${#strings.substring(post.user.lastName, 0, 1)} + '.'">Auteur</div>
                             <div class="post-time">
                                 <span th:text="${#temporals.format(post.createdAt, 'dd MMM yyyy')}">date</span>
                                 <span th:if="${post.isPinned}" style="color:#e67e22;"> 📌</span>
@@ -289,19 +269,15 @@
                 </div>
             </div>
 
-            <!-- Vide -->
             <div th:if="${posts == null or posts.isEmpty()}" class="empty-posts">
                 <div style="font-size:3.5rem;">💬</div>
                 <h3>Aucun sujet dans cette catégorie</h3>
                 <p>Soyez le premier à lancer une discussion !</p>
                 <div th:if="${session.user != null}" style="margin-top:20px;">
-                    <button class="btn btn-primary" onclick="window.location.href='/forum/creer'">
-                        ✍️ Créer un sujet
-                    </button>
+                    <button class="btn btn-primary" onclick="window.location.href='/forum/creer'">✍️ Créer un sujet</button>
                 </div>
             </div>
 
-            <!-- Pagination -->
             <div class="pagination" th:if="${totalPages != null and totalPages > 1}">
                 <a th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
                    th:href="@{'/forum/categorie/' + ${category.id} + '?page=' + ${i}}"
@@ -318,3 +294,4 @@
 <script th:src="@{/js/pawcare-main.js}"></script>
 </body>
 </html>
+
